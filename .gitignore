@@ -361,6 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/LpkTool.Tests/TestData/font.lpk
-/LpkTool.Tests/TestData/data.lpk
-/LpkTool.Tests/TestData/config.lpk
+/LpkTool.Tests/TestData/*.lpk
