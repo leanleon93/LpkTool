@@ -9,7 +9,7 @@ namespace LpkTool.Examples
         {
             var pathToLpk = Path.Combine(EXAMPLE_DATA, "font.lpk");
             var pathToFont = Path.Combine(EXAMPLE_DATA, "Roboto-Regular.ttf");
-            var relativeFontPath = @"\Binaries\Fonts\Robot-Regular.ttf";
+            var relativeFontPath = @"\Binaries\Fonts\Roboto-Regular.ttf";
             var pathToFontMap = Path.Combine(EXAMPLE_DATA, "FontMap.xml");
             var relativeEnFontMapPath = @"\Binaries\Fonts\English\FontMap.xml";
             if (!File.Exists(pathToLpk) || !File.Exists(pathToFont) || !File.Exists(pathToFontMap))

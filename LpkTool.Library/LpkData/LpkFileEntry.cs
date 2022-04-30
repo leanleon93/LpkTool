@@ -9,14 +9,16 @@ namespace LpkTool.Library
     public class LpkFileEntry
     {
 
-        internal LpkFileEntry(HeaderEntry headerEntry, int offset)
+        internal LpkFileEntry(Lpk lpk, HeaderEntry headerEntry, int offset)
         {
+            _lpk = lpk;
             _headerEntry = headerEntry;
             _offset = offset;
         }
 
-        internal LpkFileEntry(string relativePath, byte[] data, int eof)
+        internal LpkFileEntry(Lpk lpk, string relativePath, byte[] data, int eof)
         {
+            _lpk = lpk;
             _headerEntry = new HeaderEntry(relativePath);
             _offset = eof;
             ReplaceData(data);
@@ -33,23 +35,25 @@ namespace LpkTool.Library
         /// <summary>
         /// Get the decrypted, decompressed data
         /// </summary>
-        /// <param name="br"></param>
         /// <returns></returns>
-        public byte[] GetData(BinaryReader br)
+        public byte[] GetData()
         {
             if (_newData != null)
             {
                 return _newData;
             }
-
-            br.BaseStream.Position = _offset;
-            if (_headerEntry.CompressedBlockSizeInBytes != 0)
+            using (Stream stream = _lpk._isFile ? new FileStream(_lpk._filePath!, FileMode.Open) : new MemoryStream(_lpk._fileBuffer!))
+            using (var br = new BinaryReader(stream))
             {
-                return DecryptNonDbBlock(_headerEntry, br);
-            }
-            else
-            {
-                return DecryptDbBlock(_headerEntry, br);
+                br.BaseStream.Position = _offset;
+                if (_headerEntry.CompressedBlockSizeInBytes != 0)
+                {
+                    return DecryptNonDbBlock(_headerEntry, br);
+                }
+                else
+                {
+                    return DecryptDbBlock(_headerEntry, br);
+                }
             }
         }
 
@@ -136,7 +140,7 @@ namespace LpkTool.Library
             return name;
         }
 
-
+        internal Lpk _lpk;
 
         internal int _offset;
         internal HeaderEntry _headerEntry;

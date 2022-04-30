@@ -27,15 +27,11 @@ namespace LpkTool.Library
         /// <param name="outDir"></param>
         public void Export(string outDir)
         {
-            using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
-            using (var br = new BinaryReader(stream))
+            foreach (var file in Files)
             {
-                foreach (var file in Files)
-                {
-                    var outPath = Path.Combine(outDir, file.FilePath.TrimStart("\\..\\".ToCharArray()));
-                    Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
-                    File.WriteAllBytes(outPath, file.GetData(br));
-                }
+                var outPath = Path.Combine(outDir, file.FilePath.TrimStart("\\..\\".ToCharArray()));
+                Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
+                File.WriteAllBytes(outPath, file.GetData());
             }
         }
 
@@ -94,7 +90,7 @@ namespace LpkTool.Library
         /// <param name="fileData"></param>
         public void AddFile(string relativePath, byte[] fileData)
         {
-            Files.Add(new LpkFileEntry(relativePath, fileData, _eof));
+            Files.Add(new LpkFileEntry(this, relativePath, fileData, _eof));
         }
 
         /// <summary>
@@ -241,7 +237,7 @@ namespace LpkTool.Library
                 for (var i = 0; i < numberOfFiles; i++)
                 {
                     var fileHeaderEntry = header.Entries[i];
-                    result.Files.Add(new LpkFileEntry(fileHeaderEntry, offset));
+                    result.Files.Add(new LpkFileEntry(result, fileHeaderEntry, offset));
                     offset += fileHeaderEntry.PaddedBLockSizeInBytes;
                 }
                 result._eof = (int)br.BaseStream.Length;
@@ -250,9 +246,8 @@ namespace LpkTool.Library
         }
         private int _eof;
         private int _headerOffset;
-        private string? _filePath;
-        private byte[]? _fileBuffer;
-        private bool _isFile = false;
-
+        internal string? _filePath;
+        internal byte[]? _fileBuffer;
+        internal bool _isFile = false;
     }
 }
