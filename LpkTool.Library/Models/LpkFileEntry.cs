@@ -21,7 +21,7 @@ namespace LpkTool.Library.Models
         public string FilePath => _headerEntry.FilePath;
 
         private byte[] _newData;
-        public bool Modified => _newData != null;
+        internal bool Modified => _newData != null;
 
         public byte[] GetData(BinaryReader br)
         {
@@ -42,7 +42,7 @@ namespace LpkTool.Library.Models
             _newData = data;
         }
 
-        public byte[] RepackWithChanges()
+        internal byte[] RepackWithChanges()
         {
             if (!Modified) throw new Exception("Check for changes elsewhere!");
             if (_headerEntry.CompressedBlockSizeInBytes != 0)

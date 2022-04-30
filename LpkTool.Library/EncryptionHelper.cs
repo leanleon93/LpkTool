@@ -4,14 +4,17 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Parameters;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
+[assembly: InternalsVisibleToAttribute("LpkTool.Tests")]
+
 namespace LpkTool.Library
 {
-    public static class EncryptionHelper
+    internal static class EncryptionHelper
     {
-        public static byte[] BlowfishEncrypt(byte[] data_in, byte[] key, out int paddedSize, bool forceNoPadding = false)
+        internal static byte[] BlowfishEncrypt(byte[] data_in, byte[] key, out int paddedSize, bool forceNoPadding = false)
         {
             paddedSize = GetPaddedSize(data_in.Length, key.Length);
             if (forceNoPadding)
@@ -24,20 +27,20 @@ namespace LpkTool.Library
             return blowfish.Encrypt_ECB(data);
         }
 
-        public static byte[] BlowfishDecrypt(byte[] data, byte[] key)
+        internal static byte[] BlowfishDecrypt(byte[] data, byte[] key)
         {
             var blowfish = new BlowFish(key);
             blowfish.CompatMode = true;
             return blowfish.Decrypt_ECB(data);
         }
 
-        public static byte[] AesEncrypt(byte[] data, string tableName, out int paddedSize)
+        internal static byte[] AesEncrypt(byte[] data, string tableName, out int paddedSize)
         {
             var aesKey = GetAesKey(tableName);
             return AesEncrypt(data, aesKey, out paddedSize);
         }
 
-        public static byte[] AesEncrypt(byte[] data_in, byte[] aesKey, out int paddedSize)
+        internal static byte[] AesEncrypt(byte[] data_in, byte[] aesKey, out int paddedSize)
         {
             paddedSize = GetPaddedSize(data_in.Length, aesKey.Length);
             var data = PadData(data_in, paddedSize);
@@ -63,13 +66,13 @@ namespace LpkTool.Library
             return data;
         }
 
-        public static byte[] AesDecrypt(byte[] data, string tableName)
+        internal static byte[] AesDecrypt(byte[] data, string tableName)
         {
             var aesKey = GetAesKey(tableName);
             return AesDecrypt(data, aesKey);
         }
 
-        public static byte[] AesDecrypt(byte[] data, byte[] aesKey)
+        internal static byte[] AesDecrypt(byte[] data, byte[] aesKey)
         {
             var engine = new AesEngine();
             var blockCipher = new CbcBlockCipher(engine);
@@ -80,7 +83,7 @@ namespace LpkTool.Library
             return cipher.DoFinal(data);
         }
 
-        public static byte[] GetAesKey(string tableName)
+        internal static byte[] GetAesKey(string tableName)
         {
             var baseArray = Convert.FromHexString(Lpk._base);
             var dbNameHash = GetMD5(Encoding.Unicode.GetBytes(tableName));

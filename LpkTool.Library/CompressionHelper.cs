@@ -13,7 +13,7 @@ namespace LpkTool.Library
         /// <param name="buffer"></param>
         /// <param name="sizeDecompressed"></param>
         /// <returns></returns>
-        public static byte[] Deflate(byte[] buffer, int sizeDecompressed)
+        internal static byte[] Deflate(byte[] buffer, int sizeDecompressed)
         {
             var array = ZlibStream.UncompressBuffer(buffer);
             var array2 = new byte[sizeDecompressed];
@@ -32,7 +32,7 @@ namespace LpkTool.Library
         /// <param name="sizeCompressed"></param>
         /// <param name="compressionLevel"></param>
         /// <returns></returns>
-        public static byte[] Inflate(byte[] buffer, int sizeDecompressed, out int sizeCompressed, int compressionLevel = 6)
+        internal static byte[] Inflate(byte[] buffer, int sizeDecompressed, out int sizeCompressed, int compressionLevel = 6)
         {
             if (compressionLevel > 9) compressionLevel = 9;
             if (compressionLevel < 0) compressionLevel = 0;

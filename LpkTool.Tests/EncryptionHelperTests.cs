@@ -5,19 +5,16 @@ using System.Text;
 
 namespace LpkTool.Tests
 {
-    public class Tests
+    public class EncryptionHelperTests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
 
         private readonly byte[] _key = Encoding.UTF8.GetBytes("83657ea6ffa1e671375c689a2e99a598");
 
         [Test]
         [TestCase("This is a long test message that fullfills padding.")]
-        [TestCase("AAAABBBBCCCCDDDD")]
-        [TestCase("Ä")]
+        [TestCase("AAAABBBBCCCCDDDDAAAABBBBCCCCDDDD")]
+        [TestCase("ÄÖÜ")]
+        [Parallelizable(ParallelScope.All)]
         public void TestAes(string testString)
         {
             var testData = Encoding.UTF8.GetBytes(testString);
@@ -33,6 +30,7 @@ namespace LpkTool.Tests
         [TestCase("This is a long test message that overflows padding. AAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDD")]
         [TestCase("AAAABBBBCCCCDDDDAAAABBBBCCCCDDDD")]
         [TestCase("ÄÖÜ")]
+        [Parallelizable(ParallelScope.All)]
         public void TestBlowfish(string testString)
         {
             var testData = Encoding.UTF8.GetBytes(testString);

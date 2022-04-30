@@ -2,7 +2,7 @@
 
 namespace LpkTool.Library.Models
 {
-    public class HeaderEntry
+    internal class HeaderEntry
     {
         private HeaderEntry() { }
         internal HeaderEntry(string filepath)
@@ -11,11 +11,11 @@ namespace LpkTool.Library.Models
             FilePathLength = filepath.Length;
             CompressedBlockSizeInBytes = 1;
         }
-        public int FilePathLength { get; set; }
-        public string FilePath { get; set; }
-        public int UnpackedFileSizeInBytes { get; set; }
-        public int CompressedBlockSizeInBytes { get; set; }
-        public int PaddedBLockSizeInBytes { get; set; }
+        internal int FilePathLength { get; set; }
+        internal string FilePath { get; set; }
+        internal int UnpackedFileSizeInBytes { get; set; }
+        internal int CompressedBlockSizeInBytes { get; set; }
+        internal int PaddedBLockSizeInBytes { get; set; }
 
 
         internal static HeaderEntry FromByteArray(byte[] entryArray)

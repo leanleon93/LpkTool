@@ -8,7 +8,7 @@ namespace LpkTool.Library.Models
         internal static readonly string _base = "1069d88738c5c75f82b44a1f0a382762";
 
         private Lpk() { }
-        public List<LpkFileEntry> Files { get; set; }
+        public List<LpkFileEntry> Files { get; private set; }
 
         public void Export(string outDir)
         {
@@ -178,7 +178,6 @@ namespace LpkTool.Library.Models
                 var headerSize = numberOfFiles * Header.HEADER_ENTRY_SIZE;
                 var encryptedHeader = br.ReadBytes(headerSize);
                 var decryptedHeader = EncryptionHelper.BlowfishDecrypt(encryptedHeader, Encoding.UTF8.GetBytes(_key));
-                File.WriteAllBytes(@"C:\Users\leanw\Documents\quickbms\eu\dec.bin", decryptedHeader);
                 var header = Header.FromByteArray(decryptedHeader);
                 var offset = headerSize + 8;
                 result._headerOffset = offset;

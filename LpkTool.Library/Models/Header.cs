@@ -1,11 +1,11 @@
 ﻿namespace LpkTool.Library.Models
 {
-    public class Header
+    internal class Header
     {
         private Header() { }
         internal static readonly int HEADER_ENTRY_SIZE = 528;
-        public List<HeaderEntry> Entries { get; set; }
-        public static Header FromByteArray(byte[] headerArray)
+        internal List<HeaderEntry> Entries { get; set; }
+        internal static Header FromByteArray(byte[] headerArray)
         {
             var header = new Header();
             header.Entries = new List<HeaderEntry>();
