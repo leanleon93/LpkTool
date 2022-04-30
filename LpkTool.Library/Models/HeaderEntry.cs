@@ -1,0 +1,39 @@
+﻿using System.Text;
+
+namespace LpkTool.Library.Models
+{
+    public class HeaderEntry
+    {
+        private HeaderEntry() { }
+        internal HeaderEntry(string filepath)
+        {
+            FilePath = filepath;
+            FilePathLength = filepath.Length;
+            CompressedBlockSizeInBytes = 1;
+        }
+        public int FilePathLength { get; set; }
+        public string FilePath { get; set; }
+        public int UnpackedFileSizeInBytes { get; set; }
+        public int CompressedBlockSizeInBytes { get; set; }
+        public int PaddedBLockSizeInBytes { get; set; }
+
+
+        internal static HeaderEntry FromByteArray(byte[] entryArray)
+        {
+            var entry = new HeaderEntry();
+            using (var ms = new MemoryStream(entryArray))
+            {
+                using (var br = new BinaryReader(ms))
+                {
+                    entry.FilePathLength = br.ReadInt32();
+                    entry.FilePath = Encoding.UTF8.GetString(br.ReadBytes(entry.FilePathLength));
+                    br.BaseStream.Position = br.BaseStream.Length - 12;
+                    entry.UnpackedFileSizeInBytes = br.ReadInt32();
+                    entry.PaddedBLockSizeInBytes = br.ReadInt32();
+                    entry.CompressedBlockSizeInBytes = br.ReadInt32();
+                }
+            }
+            return entry;
+        }
+    }
+}
