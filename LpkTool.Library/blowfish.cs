@@ -65,19 +65,18 @@ namespace BlowFishCS
 
         private const int ROUNDS = 16; //standard is 16, to increase the number of rounds, bf_P needs to be equal to the number of rouds. Use digits of PI.
 
-        //Random number generator for creating IVs
-        private readonly RNGCryptoServiceProvider randomSource;
+        private readonly RandomNumberGenerator randomSource;
 
         //SBLOCKS
-        private uint[] bf_s0;
-        private uint[] bf_s1;
-        private uint[] bf_s2;
-        private uint[] bf_s3;
+        private uint[]? bf_s0;
+        private uint[]? bf_s1;
+        private uint[]? bf_s2;
+        private uint[]? bf_s3;
 
-        private uint[] bf_P;
+        private uint[]? bf_P;
 
         //KEY
-        private byte[] key;
+        private byte[]? key;
 
         //HALF-BLOCKS
         private uint xl_par;
@@ -98,6 +97,7 @@ namespace BlowFishCS
         #endregion
 
         #region "Constructors"
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         /// <summary>
         /// Constructor for hex key
@@ -105,7 +105,7 @@ namespace BlowFishCS
         /// <param name="hexKey">Cipher key as a hex string</param>
         public BlowFish(string hexKey)
         {
-            randomSource = new RNGCryptoServiceProvider();
+            randomSource = RandomNumberGenerator.Create();
             SetupKey(HexToByte(hexKey));
         }
 
@@ -115,10 +115,11 @@ namespace BlowFishCS
         /// <param name="cipherKey">Cipher key as a byte array</param>
         public BlowFish(byte[] cipherKey)
         {
-            randomSource = new RNGCryptoServiceProvider();
+            randomSource = RandomNumberGenerator.Create();
             SetupKey(cipherKey);
         }
 
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         #endregion
 
         #region "Public methods"
@@ -131,7 +132,10 @@ namespace BlowFishCS
         public string Encrypt_CBC(string pt)
         {
             if (!IVSet)
+            {
                 SetRandomIV();
+            }
+
             return ByteToHex(InitVector) + ByteToHex(Encrypt_CBC(Encoding.ASCII.GetBytes(pt)));
         }
 
@@ -216,8 +220,11 @@ namespace BlowFishCS
         public string Encrypt_CTR(string pt)
         {
             if (!IVSet)
+            {
                 SetRandomIV();
-            return ByteToHex(InitVector) + ByteToHex(Crypt_CTR(Encoding.ASCII.GetBytes(pt), 2));
+            }
+
+            return ByteToHex(InitVector) + ByteToHex(Crypt_CTR(Encoding.ASCII.GetBytes(pt)));
         }
 
         /// <summary>
@@ -228,18 +235,16 @@ namespace BlowFishCS
         public string Decrypt_CTR(string ct)
         {
             IV = HexToByte(ct.Substring(0, 16));
-            return Encoding.ASCII.GetString(Crypt_CTR(HexToByte(ct.Substring(16)), 2)).Replace("\0", "");
+            return Encoding.ASCII.GetString(Crypt_CTR(HexToByte(ct.Substring(16)))).Replace("\0", "");
         }
 
         /// <summary>
         /// Initialization vector for CBC mode.
         /// </summary>
-        public byte[] IV
-        {
+        public byte[]? IV {
             get { return InitVector; }
-            set
-            {
-                if (value.Length == 8)
+            set {
+                if (value != null && value.Length == 8)
                 {
                     InitVector = value;
                     IVSet = true;
@@ -255,8 +260,7 @@ namespace BlowFishCS
         /// This parameters controls the 64 bits split into 2 uint32 values.
         /// The non standard way is to not reverse the order of the splitted bytes 
         /// </summary>
-        public bool NonStandard
-        {
+        public bool NonStandard {
             get { return nonStandardMethod; }
             set { nonStandardMethod = value; }
         }
@@ -265,8 +269,7 @@ namespace BlowFishCS
         /// Parameter ensuring the endianness of the cypher.
         /// Setting this parameter as true on little endian systems ensures compatibility with big endian systems
         /// </summary>
-        public bool CompatMode
-        {
+        public bool CompatMode {
             get { return compatMethod; }
             set { compatMethod = value; }
         }
@@ -319,32 +322,32 @@ namespace BlowFishCS
             xr_par = 0;
             for (int i = 0; i < 18; i += 2)
             {
-                encipher();
+                Encipher();
                 bf_P[i] = xl_par;
                 bf_P[i + 1] = xr_par;
             }
 
             for (int i = 0; i < 256; i += 2)
             {
-                encipher();
+                Encipher();
                 bf_s0[i] = xl_par;
                 bf_s0[i + 1] = xr_par;
             }
             for (int i = 0; i < 256; i += 2)
             {
-                encipher();
+                Encipher();
                 bf_s1[i] = xl_par;
                 bf_s1[i + 1] = xr_par;
             }
             for (int i = 0; i < 256; i += 2)
             {
-                encipher();
+                Encipher();
                 bf_s2[i] = xl_par;
                 bf_s2[i + 1] = xr_par;
             }
             for (int i = 0; i < 256; i += 2)
             {
-                encipher();
+                Encipher();
                 bf_s3[i] = xl_par;
                 bf_s3[i + 1] = xr_par;
             }
@@ -358,11 +361,11 @@ namespace BlowFishCS
         /// <returns>(En/De)crypted data</returns>
         private byte[] Crypt_ECB(byte[] text, bool decrypt)
         {
-            int paddedLen = (text.Length % 8 == 0 ? text.Length : text.Length + 8 - (text.Length % 8));
-            byte[] plainText = new byte[paddedLen];
+            var paddedLen = (text.Length % 8 == 0 ? text.Length : text.Length + 8 - (text.Length % 8));
+            var plainText = new byte[paddedLen];
             Buffer.BlockCopy(text, 0, plainText, 0, text.Length);
-            byte[] block = new byte[8];
-            for (int i = 0; i < plainText.Length; i += 8)
+            var block = new byte[8];
+            for (var i = 0; i < plainText.Length; i += 8)
             {
                 Buffer.BlockCopy(plainText, i, block, 0, 8);
                 if (decrypt)
@@ -378,7 +381,7 @@ namespace BlowFishCS
             return plainText;
         }
 
-        public byte[] Crypt_CTR(byte[] text, int numThreads)
+        public byte[] Crypt_CTR(byte[] text)
         {
             if (!IVSet)
             {
@@ -456,9 +459,9 @@ namespace BlowFishCS
         /// </summary>
         /// <param name="block">8 bit block 1</param>
         /// <param name="iv">8 bit block 2</param>
-        private void XorBlock(ref byte[] block, byte[] iv)
+        private static void XorBlock(ref byte[] block, byte[] iv)
         {
-            for (int i = 0; i < block.Length; i++)
+            for (var i = 0; i < block.Length; i++)
             {
                 block[i] ^= iv[i];
             }
@@ -471,7 +474,7 @@ namespace BlowFishCS
         private void BlockEncrypt(ref byte[] block)
         {
             SetBlock(block);
-            encipher();
+            Encipher();
             GetBlock(ref block);
         }
 
@@ -482,7 +485,7 @@ namespace BlowFishCS
         private void BlockDecrypt(ref byte[] block)
         {
             SetBlock(block);
-            decipher();
+            Decipher();
             GetBlock(ref block);
         }
 
@@ -569,39 +572,35 @@ namespace BlowFishCS
         /// <summary>
         /// Runs the blowfish algorithm (standard 16 rounds)
         /// </summary>
-        private void encipher()
+        private void Encipher()
         {
-            xl_par ^= bf_P[0];
+            xl_par ^= bf_P![0];
             for (uint i = 0; i < ROUNDS; i += 2)
             {
-                xr_par = round(xr_par, xl_par, i + 1);
-                xl_par = round(xl_par, xr_par, i + 2);
+                xr_par = Round(xr_par, xl_par, i + 1);
+                xl_par = Round(xl_par, xr_par, i + 2);
             }
             xr_par = xr_par ^ bf_P[17];
 
             //swap the blocks
-            uint swap = xl_par;
-            xl_par = xr_par;
-            xr_par = swap;
+            (xr_par, xl_par) = (xl_par, xr_par);
         }
 
         /// <summary>
         /// Runs the blowfish algorithm in reverse (standard 16 rounds)
         /// </summary>
-        private void decipher()
+        private void Decipher()
         {
-            xl_par ^= bf_P[17];
+            xl_par ^= bf_P![17];
             for (uint i = 16; i > 0; i -= 2)
             {
-                xr_par = round(xr_par, xl_par, i);
-                xl_par = round(xl_par, xr_par, i - 1);
+                xr_par = Round(xr_par, xl_par, i);
+                xl_par = Round(xl_par, xr_par, i - 1);
             }
             xr_par = xr_par ^ bf_P[0];
 
             //swap the blocks
-            uint swap = xl_par;
-            xl_par = xr_par;
-            xr_par = swap;
+            (xr_par, xl_par) = (xl_par, xr_par);
         }
 
         /// <summary>
@@ -611,11 +610,11 @@ namespace BlowFishCS
         /// <param name="b">See spec</param>
         /// <param name="n">See spec</param>
         /// <returns></returns>
-        private uint round(uint a, uint b, uint n)
+        private uint Round(uint a, uint b, uint n)
         {
-            uint x1 = (bf_s0[wordByte0(b)] + bf_s1[wordByte1(b)]) ^ bf_s2[wordByte2(b)];
-            uint x2 = x1 + bf_s3[this.wordByte3(b)];
-            uint x3 = x2 ^ bf_P[n];
+            uint x1 = (bf_s0![WordByte0(b)] + bf_s1![WordByte1(b)]) ^ bf_s2![WordByte2(b)];
+            uint x2 = x1 + bf_s3![WordByte3(b)];
+            uint x3 = x2 ^ bf_P![n];
             return x3 ^ a;
         }
 
@@ -626,7 +625,7 @@ namespace BlowFishCS
         //The amount of hex digits can be increased if you want to experiment with more rounds and longer key lengths
 
         //Increase the size of this array when increasing the number of rounds
-        private uint[] SetupP()
+        private static uint[] SetupP()
         {
             return new uint[] {
                 0x243f6a88,0x85a308d3,0x13198a2e,0x03707344,0xa4093822,0x299f31d0,
@@ -635,7 +634,7 @@ namespace BlowFishCS
             };
         }
 
-        private uint[] SetupS0()
+        private static uint[] SetupS0()
         {
             return new uint[] {
                     0xd1310ba6,0x98dfb5ac,0x2ffd72db,0xd01adfb7,0xb8e1afed,0x6a267e96,
@@ -684,7 +683,7 @@ namespace BlowFishCS
             };
         }
 
-        private uint[] SetupS1()
+        private static uint[] SetupS1()
         {
             return new uint[] {
                 0x4b7a70e9,0xb5b32944,0xdb75092e,0xc4192623,0xad6ea6b0,0x49a7df7d,
@@ -733,7 +732,7 @@ namespace BlowFishCS
             };
         }
 
-        private uint[] SetupS2()
+        private static uint[] SetupS2()
         {
             return new uint[] {
                 0xe93d5a68,0x948140f7,0xf64c261c,0x94692934,0x411520f7,0x7602d4f7,
@@ -782,7 +781,7 @@ namespace BlowFishCS
             };
         }
 
-        private uint[] SetupS3()
+        private static uint[] SetupS3()
         {
             return new uint[] {
                     0x3a39ce37,0xd3faf5cf,0xabc27737,0x5ac52d1b,0x5cb0679e,0x4fa33742,
@@ -836,35 +835,41 @@ namespace BlowFishCS
         #region Conversions
 
         //gets the first byte in a uint
-        private byte wordByte0(uint w)
+        private static byte WordByte0(uint w)
         {
             return (byte)(w / 256 / 256 / 256 % 256);
         }
 
         //gets the second byte in a uint
-        private byte wordByte1(uint w)
+        private static byte WordByte1(uint w)
         {
             return (byte)(w / 256 / 256 % 256);
         }
 
         //gets the third byte in a uint
-        private byte wordByte2(uint w)
+        private static byte WordByte2(uint w)
         {
             return (byte)(w / 256 % 256);
         }
 
         //gets the fourth byte in a uint
-        private byte wordByte3(uint w)
+        private static byte WordByte3(uint w)
         {
             return (byte)(w % 256);
         }
 
         //converts a byte array to a hex string
-        private string ByteToHex(byte[] bytes)
+        private static string ByteToHex(byte[]? bytes)
         {
             StringBuilder s = new StringBuilder();
-            foreach (byte b in bytes)
-                s.Append(b.ToString("x2"));
+            if (bytes != null)
+            {
+                foreach (byte b in bytes)
+                {
+                    s.Append(b.ToString("x2"));
+                }
+            }
+
             return s.ToString();
         }
 

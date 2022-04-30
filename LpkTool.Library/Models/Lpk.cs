@@ -2,17 +2,31 @@
 
 namespace LpkTool.Library.Models
 {
+    /// <summary>
+    /// Lost Ark .lpk File
+    /// </summary>
     public class Lpk
     {
         internal static readonly string _key = "83657ea6ffa1e671375c689a2e99a598";
         internal static readonly string _base = "1069d88738c5c75f82b44a1f0a382762";
 
-        private Lpk() { }
+        private Lpk()
+        {
+            Files = new List<LpkFileEntry>();
+        }
+
+        /// <summary>
+        /// All files in the .lpk file
+        /// </summary>
         public List<LpkFileEntry> Files { get; private set; }
 
+        /// <summary>
+        /// Export all files to a directory
+        /// </summary>
+        /// <param name="outDir"></param>
         public void Export(string outDir)
         {
-            using (Stream stream = _isFile ? new FileStream(_filePath, FileMode.Open) : new MemoryStream(_fileBuffer))
+            using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
             using (BinaryReader br = new BinaryReader(stream))
             {
                 foreach (var file in Files)
@@ -24,12 +38,17 @@ namespace LpkTool.Library.Models
             }
         }
 
+        /// <summary>
+        /// Get a file by full "relative" path
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <returns></returns>
         public LpkFileEntry? GetFileByPath(string filepath)
         {
             var fileEntry = Files.Where(x => x.FilePath.ToLower() == filepath.ToLower()).FirstOrDefault();
             if (fileEntry != null)
             {
-                using (Stream stream = _isFile ? new FileStream(_filePath, FileMode.Open) : new MemoryStream(_fileBuffer))
+                using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
                 using (BinaryReader br = new BinaryReader(stream))
                 {
                     return fileEntry;
@@ -38,12 +57,17 @@ namespace LpkTool.Library.Models
             return null;
         }
 
+        /// <summary>
+        /// Get a file by its name. (Can be misleading)
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public LpkFileEntry? GetFileByName(string filename)
         {
             var fileEntry = Files.Where(x => Path.GetFileName(x.FilePath).ToLower() == filename.ToLower()).FirstOrDefault();
             if (fileEntry != null)
             {
-                using (Stream stream = _isFile ? new FileStream(_filePath, FileMode.Open) : new MemoryStream(_fileBuffer))
+                using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
                 using (BinaryReader br = new BinaryReader(stream))
                 {
                     return fileEntry;
@@ -52,21 +76,39 @@ namespace LpkTool.Library.Models
             return null;
         }
 
+        /// <summary>
+        /// Add a new file
+        /// </summary>
+        /// <param name="relativePath"></param>
+        /// <param name="filePath"></param>
         public void AddFile(string relativePath, string filePath)
         {
             AddFile(relativePath, File.ReadAllBytes(filePath));
         }
 
+        /// <summary>
+        /// Add a new file
+        /// </summary>
+        /// <param name="relativePath"></param>
+        /// <param name="fileData"></param>
         public void AddFile(string relativePath, byte[] fileData)
         {
             Files.Add(new LpkFileEntry(relativePath, fileData, _eof));
         }
 
+        /// <summary>
+        /// Repack
+        /// </summary>
+        /// <param name="path"></param>
         public void RepackToFile(string path)
         {
             File.WriteAllBytes(path, Repack());
         }
 
+        /// <summary>
+        /// Repack
+        /// </summary>
+        /// <returns></returns>
         public byte[] RepackToByteArray()
         {
             return Repack();
@@ -76,14 +118,14 @@ namespace LpkTool.Library.Models
         {
             if (_isFile)
             {
-                using (var stream = new FileStream(_filePath, FileMode.Open))
+                using (var stream = new FileStream(_filePath!, FileMode.Open))
                 {
                     return Repack(stream);
                 }
             }
             else
             {
-                using (var stream = new MemoryStream(_fileBuffer))
+                using (var stream = new MemoryStream(_fileBuffer!))
                 {
                     return Repack(stream);
                 }
@@ -135,7 +177,11 @@ namespace LpkTool.Library.Models
                                     bw2.Write(file._headerEntry.PaddedBLockSizeInBytes);
                                     bw2.Write(file._headerEntry.CompressedBlockSizeInBytes);
                                 }
-                                if (bw2.BaseStream.Length != (Files.Count * Header.HEADER_ENTRY_SIZE)) throw new Exception();
+                                if (bw2.BaseStream.Length != (Files.Count * Header.HEADER_ENTRY_SIZE))
+                                {
+                                    throw new Exception();
+                                }
+
                                 var header = ms2.ToArray();
                                 var encryptedHeader = EncryptionHelper.BlowfishEncrypt(header, Encoding.UTF8.GetBytes(_key), out int _, true);
 
@@ -153,6 +199,11 @@ namespace LpkTool.Library.Models
             }
         }
 
+        /// <summary>
+        /// Get a new Lpk Instance from a .lpk file
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static Lpk FromFile(string path)
         {
             var lpk = FromStream(new FileStream(path, FileMode.Open));
@@ -160,6 +211,12 @@ namespace LpkTool.Library.Models
             lpk._filePath = path;
             return lpk;
         }
+
+        /// <summary>
+        /// Get a new Lpk Instance from a .lpk buffer
+        /// </summary>
+        /// <param name="lpkArray"></param>
+        /// <returns></returns>
         public static Lpk FromByteArray(byte[] lpkArray)
         {
             var lpk = FromStream(new MemoryStream(lpkArray));
@@ -171,7 +228,6 @@ namespace LpkTool.Library.Models
         private static Lpk FromStream(Stream stream)
         {
             var result = new Lpk();
-            result.Files = new List<LpkFileEntry>();
             using (BinaryReader br = new BinaryReader(stream))
             {
                 var numberOfFiles = br.ReadInt32();
@@ -193,8 +249,8 @@ namespace LpkTool.Library.Models
         }
         private int _eof;
         private int _headerOffset;
-        private string _filePath;
-        private byte[] _fileBuffer;
+        private string? _filePath;
+        private byte[]? _fileBuffer;
         private bool _isFile = false;
 
     }

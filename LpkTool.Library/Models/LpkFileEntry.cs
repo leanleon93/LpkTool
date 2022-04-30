@@ -2,6 +2,9 @@
 
 namespace LpkTool.Library.Models
 {
+    /// <summary>
+    /// Lost Ark .lpk File Record
+    /// </summary>
     public class LpkFileEntry
     {
 
@@ -18,14 +21,26 @@ namespace LpkTool.Library.Models
             ReplaceData(data);
         }
 
+        /// <summary>
+        /// The relative file path
+        /// </summary>
         public string FilePath => _headerEntry.FilePath;
 
-        private byte[] _newData;
+        private byte[]? _newData;
         internal bool Modified => _newData != null;
 
+        /// <summary>
+        /// Get the decrypted, decompressed data
+        /// </summary>
+        /// <param name="br"></param>
+        /// <returns></returns>
         public byte[] GetData(BinaryReader br)
         {
-            if (_newData != null) return _newData;
+            if (_newData != null)
+            {
+                return _newData;
+            }
+
             br.BaseStream.Position = _offset;
             if (_headerEntry.CompressedBlockSizeInBytes != 0)
             {
@@ -37,6 +52,10 @@ namespace LpkTool.Library.Models
             }
         }
 
+        /// <summary>
+        /// Replace the data
+        /// </summary>
+        /// <param name="data"></param>
         public void ReplaceData(byte[] data)
         {
             _newData = data;
@@ -44,7 +63,11 @@ namespace LpkTool.Library.Models
 
         internal byte[] RepackWithChanges()
         {
-            if (!Modified) throw new Exception("Check for changes elsewhere!");
+            if (!Modified || _newData == null)
+            {
+                throw new Exception("Check for changes elsewhere!");
+            }
+
             if (_headerEntry.CompressedBlockSizeInBytes != 0)
             {
                 var data = EncryptNonDbBlock(ref _headerEntry, _newData);

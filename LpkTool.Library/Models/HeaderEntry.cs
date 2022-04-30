@@ -4,7 +4,10 @@ namespace LpkTool.Library.Models
 {
     internal class HeaderEntry
     {
-        private HeaderEntry() { }
+        private HeaderEntry()
+        {
+            FilePath = "";
+        }
         internal HeaderEntry(string filepath)
         {
             FilePath = filepath;
