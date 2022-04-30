@@ -53,7 +53,16 @@ namespace LpkTool.Library.Models
         }
 
         /// <summary>
-        /// Replace the data
+        /// Replace the data from a file
+        /// </summary>
+        /// <param name="path"></param>
+        public void ReplaceData(string path)
+        {
+            ReplaceData(File.ReadAllBytes(path));
+        }
+
+        /// <summary>
+        /// Replace the data from a buffer
         /// </summary>
         /// <param name="data"></param>
         public void ReplaceData(byte[] data)

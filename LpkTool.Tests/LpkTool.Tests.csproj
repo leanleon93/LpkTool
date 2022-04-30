@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestData\.keep" />
     <None Remove="TestData\config.lpk" />
     <None Remove="TestData\data.lpk" />
     <None Remove="TestData\font.lpk" />
