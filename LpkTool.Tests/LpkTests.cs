@@ -26,7 +26,7 @@ namespace LpkTool.Tests
 
         [Test]
         [TestCase(@"C:\Users\leanw\Documents\quickbms\eu\font.lpk", @"C:\Users\leanw\Documents\quickbms\eu\FontMap.xml", @"\Binaries\Fonts\English\FontMap.xml")]
-        public void RepackWithSameFileChanged(string lpkPath, string replaceFilePath, string replaceFileSearchPath)
+        public void CustomStuff(string lpkPath, string replaceFilePath, string replaceFileSearchPath)
         {
             var lpk = Lpk.FromFile(lpkPath);
             var found = lpk.GetFileByPath(replaceFileSearchPath);

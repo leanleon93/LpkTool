@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Ionic.Zlib;
+﻿using Ionic.Zlib;
 
 namespace LpkTool.Library
 {

@@ -54,20 +54,19 @@ Use the same mode of operation for decryption.
  * -Do not use the compatibility mode unless neccessary.
  */
 
-using System;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace BlowFishCS
 {
-    class BlowFish
+    internal class BlowFish
     {
         #region "Global variables and constants"
 
-        const int ROUNDS = 16; //standard is 16, to increase the number of rounds, bf_P needs to be equal to the number of rouds. Use digits of PI.
+        private const int ROUNDS = 16; //standard is 16, to increase the number of rounds, bf_P needs to be equal to the number of rouds. Use digits of PI.
 
         //Random number generator for creating IVs
-        RNGCryptoServiceProvider randomSource;
+        private readonly RNGCryptoServiceProvider randomSource;
 
         //SBLOCKS
         private uint[] bf_s0;

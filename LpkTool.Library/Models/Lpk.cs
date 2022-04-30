@@ -1,5 +1,4 @@
-﻿using BlowFishCS;
-using System.Text;
+﻿using System.Text;
 
 namespace LpkTool.Library.Models
 {
