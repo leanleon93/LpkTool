@@ -82,7 +82,7 @@ namespace LpkTool.Library.Models
 
         private static byte[] EncryptDbBlock(ref HeaderEntry headerEntry, byte[] newData)
         {
-            //TODO: Oh hell no
+            //TODO: Implement .db Repack
             throw new NotImplementedException();
         }
 
