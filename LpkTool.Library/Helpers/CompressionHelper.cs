@@ -1,6 +1,6 @@
 ﻿using Ionic.Zlib;
 
-namespace LpkTool.Library
+namespace LpkTool.Library.Helpers
 {
     /// <summary>
     ///     Helper for zlib compression

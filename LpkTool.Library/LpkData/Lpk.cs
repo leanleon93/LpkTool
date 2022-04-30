@@ -1,6 +1,7 @@
-﻿using System.Text;
+﻿using LpkTool.Library.Helpers;
+using System.Text;
 
-namespace LpkTool.Library.Models
+namespace LpkTool.Library
 {
     /// <summary>
     /// Lost Ark .lpk File
@@ -27,7 +28,7 @@ namespace LpkTool.Library.Models
         public void Export(string outDir)
         {
             using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
-            using (BinaryReader br = new BinaryReader(stream))
+            using (var br = new BinaryReader(stream))
             {
                 foreach (var file in Files)
                 {
@@ -49,7 +50,7 @@ namespace LpkTool.Library.Models
             if (fileEntry != null)
             {
                 using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
-                using (BinaryReader br = new BinaryReader(stream))
+                using (var br = new BinaryReader(stream))
                 {
                     return fileEntry;
                 }
@@ -68,7 +69,7 @@ namespace LpkTool.Library.Models
             if (fileEntry != null)
             {
                 using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
-                using (BinaryReader br = new BinaryReader(stream))
+                using (var br = new BinaryReader(stream))
                 {
                     return fileEntry;
                 }
@@ -177,13 +178,13 @@ namespace LpkTool.Library.Models
                                     bw2.Write(file._headerEntry.PaddedBLockSizeInBytes);
                                     bw2.Write(file._headerEntry.CompressedBlockSizeInBytes);
                                 }
-                                if (bw2.BaseStream.Length != (Files.Count * Header.HEADER_ENTRY_SIZE))
+                                if (bw2.BaseStream.Length != Files.Count * Header.HEADER_ENTRY_SIZE)
                                 {
                                     throw new Exception();
                                 }
 
                                 var header = ms2.ToArray();
-                                var encryptedHeader = EncryptionHelper.BlowfishEncrypt(header, Encoding.UTF8.GetBytes(_key), out int _, true);
+                                var encryptedHeader = EncryptionHelper.BlowfishEncrypt(header, Encoding.UTF8.GetBytes(_key), out var _, true);
 
                                 var body = ms.ToArray();
                                 var result = new byte[encryptedHeader.Length + body.Length + 8];
@@ -228,7 +229,7 @@ namespace LpkTool.Library.Models
         private static Lpk FromStream(Stream stream)
         {
             var result = new Lpk();
-            using (BinaryReader br = new BinaryReader(stream))
+            using (var br = new BinaryReader(stream))
             {
                 var numberOfFiles = br.ReadInt32();
                 var headerSize = numberOfFiles * Header.HEADER_ENTRY_SIZE;
@@ -237,7 +238,7 @@ namespace LpkTool.Library.Models
                 var header = Header.FromByteArray(decryptedHeader);
                 var offset = headerSize + 8;
                 result._headerOffset = offset;
-                for (int i = 0; i < numberOfFiles; i++)
+                for (var i = 0; i < numberOfFiles; i++)
                 {
                     var fileHeaderEntry = header.Entries[i];
                     result.Files.Add(new LpkFileEntry(fileHeaderEntry, offset));

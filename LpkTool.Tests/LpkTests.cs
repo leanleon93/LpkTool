@@ -1,4 +1,4 @@
-﻿using LpkTool.Library.Models;
+﻿using LpkTool.Library;
 using NUnit.Framework;
 using System.IO;
 using System.Text;
@@ -22,20 +22,5 @@ namespace LpkTool.Tests
             var inputString = Encoding.UTF8.GetString(File.ReadAllBytes(path));
             Assert.AreEqual(inputString, repackResultString);
         }
-
-        //[Test]
-        //[TestCase(@"C:\Users\leanw\Documents\quickbms\eu\font.lpk", @"C:\Users\leanw\Documents\quickbms\eu\FontMap.xml", @"\Binaries\Fonts\English\FontMap.xml")]
-        //public void CustomStuff(string lpkPath, string replaceFilePath, string replaceFileSearchPath)
-        //{
-        //    var lpk = Lpk.FromFile(lpkPath);
-        //    var found = lpk.GetFileByPath(replaceFileSearchPath);
-        //    if (found != null)
-        //    {
-        //        //lpk.AddFile(@"\Binaries\Fonts\Roboto-Regular.ttf", @"C:\Users\leanw\Documents\quickbms\eu\Roboto-Regular.ttf");
-        //        found.ReplaceData(File.ReadAllBytes(replaceFilePath));
-        //        var repackResult = lpk.RepackToByteArray();
-        //        File.WriteAllBytes(@"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\font_new.lpk", repackResult);
-        //    }
-        //}
     }
 }

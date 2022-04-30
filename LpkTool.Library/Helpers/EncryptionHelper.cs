@@ -1,6 +1,4 @@
-﻿using BlowFishCS;
-using LpkTool.Library.Models;
-using Org.BouncyCastle.Crypto;
+﻿using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -8,9 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
-[assembly: InternalsVisibleToAttribute("LpkTool.Tests")]
+[assembly: InternalsVisibleTo("LpkTool.Tests")]
 
-namespace LpkTool.Library
+namespace LpkTool.Library.Helpers
 {
     internal static class EncryptionHelper
     {
@@ -88,7 +86,7 @@ namespace LpkTool.Library
             var baseArray = Convert.FromHexString(Lpk._base);
             var dbNameHash = GetMD5(Encoding.Unicode.GetBytes(tableName));
             var xorResult = new byte[16];
-            for (int i = 0; i < 16; i++)
+            for (var i = 0; i < 16; i++)
             {
                 var tmp = 15 - i;
                 var baseChar = baseArray[i];
@@ -112,13 +110,13 @@ namespace LpkTool.Library
 
         private static byte[] GetSha256(byte[] message)
         {
-            SHA256 sHA256 = SHA256.Create();
+            var sHA256 = SHA256.Create();
             return sHA256.ComputeHash(message);
         }
 
         private static byte[] GetMD5(byte[] message)
         {
-            MD5 hashString = MD5.Create();
+            var hashString = MD5.Create();
             return hashString.ComputeHash(message);
         }
     }

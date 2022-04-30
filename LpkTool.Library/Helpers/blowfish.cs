@@ -57,7 +57,7 @@ Use the same mode of operation for decryption.
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BlowFishCS
+namespace LpkTool.Library.Helpers
 {
     internal class BlowFish
     {
@@ -310,42 +310,42 @@ namespace BlowFishCS
             }
 
             Buffer.BlockCopy(cipherKey, 0, key, 0, cipherKey.Length);
-            int j = 0;
-            for (int i = 0; i < 18; i++)
+            var j = 0;
+            for (var i = 0; i < 18; i++)
             {
-                uint d = (uint)(((key[j % cipherKey.Length] * 256 + key[(j + 1) % cipherKey.Length]) * 256 + key[(j + 2) % cipherKey.Length]) * 256 + key[(j + 3) % cipherKey.Length]);
+                var d = (uint)(((key[j % cipherKey.Length] * 256 + key[(j + 1) % cipherKey.Length]) * 256 + key[(j + 2) % cipherKey.Length]) * 256 + key[(j + 3) % cipherKey.Length]);
                 bf_P[i] ^= d;
                 j = (j + 4) % cipherKey.Length;
             }
 
             xl_par = 0;
             xr_par = 0;
-            for (int i = 0; i < 18; i += 2)
+            for (var i = 0; i < 18; i += 2)
             {
                 Encipher();
                 bf_P[i] = xl_par;
                 bf_P[i + 1] = xr_par;
             }
 
-            for (int i = 0; i < 256; i += 2)
+            for (var i = 0; i < 256; i += 2)
             {
                 Encipher();
                 bf_s0[i] = xl_par;
                 bf_s0[i + 1] = xr_par;
             }
-            for (int i = 0; i < 256; i += 2)
+            for (var i = 0; i < 256; i += 2)
             {
                 Encipher();
                 bf_s1[i] = xl_par;
                 bf_s1[i + 1] = xr_par;
             }
-            for (int i = 0; i < 256; i += 2)
+            for (var i = 0; i < 256; i += 2)
             {
                 Encipher();
                 bf_s2[i] = xl_par;
                 bf_s2[i + 1] = xr_par;
             }
-            for (int i = 0; i < 256; i += 2)
+            for (var i = 0; i < 256; i += 2)
             {
                 Encipher();
                 bf_s3[i] = xl_par;
@@ -361,7 +361,7 @@ namespace BlowFishCS
         /// <returns>(En/De)crypted data</returns>
         private byte[] Crypt_ECB(byte[] text, bool decrypt)
         {
-            var paddedLen = (text.Length % 8 == 0 ? text.Length : text.Length + 8 - (text.Length % 8));
+            var paddedLen = text.Length % 8 == 0 ? text.Length : text.Length + 8 - text.Length % 8;
             var plainText = new byte[paddedLen];
             Buffer.BlockCopy(text, 0, plainText, 0, text.Length);
             var block = new byte[8];
@@ -387,15 +387,15 @@ namespace BlowFishCS
             {
                 throw new Exception("IV not set.");
             }
-            byte[] input = new byte[8];
-            byte[] counter = new byte[8];
-            int paddedLen = (text.Length % 8 == 0 ? text.Length : text.Length + 8 - (text.Length % 8));
-            byte[] plainText = new byte[paddedLen];
+            var input = new byte[8];
+            var counter = new byte[8];
+            var paddedLen = text.Length % 8 == 0 ? text.Length : text.Length + 8 - text.Length % 8;
+            var plainText = new byte[paddedLen];
             Buffer.BlockCopy(text, 0, plainText, 0, text.Length);
-            byte[] block = new byte[8];
-            for (int i = 0; i < plainText.Length; i += 8)
+            var block = new byte[8];
+            for (var i = 0; i < plainText.Length; i += 8)
             {
-                for (int x = 0; x < 8; x++)
+                for (var x = 0; x < 8; x++)
                 {
                     input[x] = (byte)(counter[x] ^ InitVector[x]);
                 }
@@ -419,16 +419,16 @@ namespace BlowFishCS
             {
                 throw new Exception("IV not set.");
             }
-            int paddedLen = (text.Length % 8 == 0 ? text.Length : text.Length + 8 - (text.Length % 8));
-            byte[] plainText = new byte[paddedLen];
+            var paddedLen = text.Length % 8 == 0 ? text.Length : text.Length + 8 - text.Length % 8;
+            var plainText = new byte[paddedLen];
             Buffer.BlockCopy(text, 0, plainText, 0, text.Length);
-            byte[] block = new byte[8];
-            byte[] preblock = new byte[8];
-            byte[] iv = new byte[8];
+            var block = new byte[8];
+            var preblock = new byte[8];
+            var iv = new byte[8];
             Buffer.BlockCopy(InitVector, 0, iv, 0, 8);
             if (!decrypt)
             {
-                for (int i = 0; i < plainText.Length; i += 8)
+                for (var i = 0; i < plainText.Length; i += 8)
                 {
                     Buffer.BlockCopy(plainText, i, block, 0, 8);
                     XorBlock(ref block, iv);
@@ -439,7 +439,7 @@ namespace BlowFishCS
             }
             else
             {
-                for (int i = 0; i < plainText.Length; i += 8)
+                for (var i = 0; i < plainText.Length; i += 8)
                 {
                     Buffer.BlockCopy(plainText, i, block, 0, 8);
 
@@ -495,8 +495,8 @@ namespace BlowFishCS
         /// <param name="block">the 64 bit block to setup</param>
         private void SetBlock(byte[] block)
         {
-            byte[] block1 = new byte[4];
-            byte[] block2 = new byte[4];
+            var block1 = new byte[4];
+            var block2 = new byte[4];
             Buffer.BlockCopy(block, 0, block1, 0, 4);
             Buffer.BlockCopy(block, 4, block2, 0, 4);
             //split the block
@@ -534,8 +534,8 @@ namespace BlowFishCS
         /// <param name="block">64 bit buffer to receive the block</param>
         private void GetBlock(ref byte[] block)
         {
-            byte[] block1 = new byte[4];
-            byte[] block2 = new byte[4];
+            var block1 = new byte[4];
+            var block2 = new byte[4];
             if (BitConverter.IsLittleEndian && compatMethod)
             {
                 block1 = BitConverter.GetBytes(xl_par);
@@ -612,9 +612,9 @@ namespace BlowFishCS
         /// <returns></returns>
         private uint Round(uint a, uint b, uint n)
         {
-            uint x1 = (bf_s0![WordByte0(b)] + bf_s1![WordByte1(b)]) ^ bf_s2![WordByte2(b)];
-            uint x2 = x1 + bf_s3![WordByte3(b)];
-            uint x3 = x2 ^ bf_P![n];
+            var x1 = bf_s0![WordByte0(b)] + bf_s1![WordByte1(b)] ^ bf_s2![WordByte2(b)];
+            var x2 = x1 + bf_s3![WordByte3(b)];
+            var x3 = x2 ^ bf_P![n];
             return x3 ^ a;
         }
 
@@ -861,10 +861,10 @@ namespace BlowFishCS
         //converts a byte array to a hex string
         private static string ByteToHex(byte[]? bytes)
         {
-            StringBuilder s = new StringBuilder();
+            var s = new StringBuilder();
             if (bytes != null)
             {
-                foreach (byte b in bytes)
+                foreach (var b in bytes)
                 {
                     s.Append(b.ToString("x2"));
                 }
@@ -877,11 +877,11 @@ namespace BlowFishCS
         internal static byte[] HexToByte(string hex)
         {
             hex = hex.Replace(" ", string.Empty);
-            byte[] r = new byte[hex.Length / 2];
-            for (int i = 0; i < hex.Length - 1; i += 2)
+            var r = new byte[hex.Length / 2];
+            for (var i = 0; i < hex.Length - 1; i += 2)
             {
-                byte a = GetHex(hex[i]);
-                byte b = GetHex(hex[i + 1]);
+                var a = GetHex(hex[i]);
+                var b = GetHex(hex[i + 1]);
                 r[i / 2] = (byte)(a * 16 + b);
             }
             return r;

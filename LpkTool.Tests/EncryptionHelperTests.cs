@@ -1,4 +1,4 @@
-using LpkTool.Library;
+using LpkTool.Library.Helpers;
 using NUnit.Framework;
 using System;
 using System.Text;

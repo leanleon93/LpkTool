@@ -1,4 +1,4 @@
-﻿namespace LpkTool.Library.Models
+﻿namespace LpkTool.Library
 {
     internal class Header
     {
@@ -16,7 +16,7 @@
             {
                 using (var br = new BinaryReader(ms))
                 {
-                    for (int i = 0; i < numberOfFiles; i++)
+                    for (var i = 0; i < numberOfFiles; i++)
                     {
                         header.Entries.Add(HeaderEntry.FromByteArray(br.ReadBytes(HEADER_ENTRY_SIZE)));
                     }

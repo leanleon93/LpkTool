@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace LpkTool.Library.Models
+namespace LpkTool.Library
 {
     internal class HeaderEntry
     {

@@ -1,6 +1,7 @@
-﻿using System.Text;
+﻿using LpkTool.Library.Helpers;
+using System.Text;
 
-namespace LpkTool.Library.Models
+namespace LpkTool.Library
 {
     /// <summary>
     /// Lost Ark .lpk File Record
@@ -98,9 +99,9 @@ namespace LpkTool.Library.Models
         private static byte[] EncryptNonDbBlock(ref HeaderEntry fileHeader, byte[] newData)
         {
             fileHeader.UnpackedFileSizeInBytes = newData.Length;
-            var compressedBlock = CompressionHelper.Inflate(newData, newData.Length, out int sizeCompressed, 7);
+            var compressedBlock = CompressionHelper.Inflate(newData, newData.Length, out var sizeCompressed, 7);
             fileHeader.CompressedBlockSizeInBytes = sizeCompressed;
-            var encryptedBlock = EncryptionHelper.BlowfishEncrypt(compressedBlock, Encoding.UTF8.GetBytes(Lpk._key), out int paddedSize);
+            var encryptedBlock = EncryptionHelper.BlowfishEncrypt(compressedBlock, Encoding.UTF8.GetBytes(Lpk._key), out var paddedSize);
             fileHeader.PaddedBLockSizeInBytes = paddedSize;
             return encryptedBlock;
         }
@@ -117,7 +118,7 @@ namespace LpkTool.Library.Models
 
         private static byte[] DecryptDbBlock(HeaderEntry fileHeader, BinaryReader br)
         {
-            string dbName = GetDbName(fileHeader.FilePath);
+            var dbName = GetDbName(fileHeader.FilePath);
             var encryptedBlock = br.ReadBytes(fileHeader.PaddedBLockSizeInBytes);
             var decryptedBlock = EncryptionHelper.AesDecrypt(encryptedBlock, dbName);
             var unpadded = new byte[fileHeader.UnpackedFileSizeInBytes];
