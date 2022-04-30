@@ -1,0 +1,27 @@
+name: .NET
+
+on:
+  push:
+    paths-ignore:
+      - 'readme.md'
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Build
+      run: dotnet build LpkTool.Library/LpkTool.Library.csproj --configuration Release
+    - name: Pack
+      run: dotnet pack --no-build -c Release LpkTool.Library/LpkTool.Library.csproj -o .
+    - name: Publish nuget
+      run: dotnet nuget push *.nupkg -s https://nuget.pkg.github.com/leanleon93/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate -n
