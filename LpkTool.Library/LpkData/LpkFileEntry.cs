@@ -94,10 +94,20 @@ namespace LpkTool.Library
             }
         }
 
-        private static byte[] EncryptDbBlock(ref HeaderEntry headerEntry, byte[] newData)
+        private static byte[] EncryptDbBlock(ref HeaderEntry fileHeader, byte[] newData)
         {
-            //TODO: Implement .db Repack
-            throw new NotImplementedException();
+            var dbName = GetDbName(fileHeader.FilePath);
+            fileHeader.UnpackedFileSizeInBytes = newData.Length;
+            var chunks = SplitIntoChunks(newData);
+            var encryptedData = new byte[newData.Length];
+            for (var i = 0; i < chunks.Count; i++)
+            {
+                var chunk = chunks[i];
+                var encryptedChunk = EncryptionHelper.AesEncrypt(chunk, dbName, out int _);
+                Array.Copy(encryptedChunk, 0, encryptedData, (i * _maxDbChunkSize), encryptedChunk.Length);
+            }
+            fileHeader.PaddedBLockSizeInBytes = encryptedData.Length;
+            return encryptedData;
         }
 
         private static byte[] EncryptNonDbBlock(ref HeaderEntry fileHeader, byte[] newData)

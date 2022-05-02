@@ -41,12 +41,5 @@ namespace LpkTool.Tests
             var result = Encoding.UTF8.GetString(decryptedUnpadded);
             Assert.AreEqual(testString, result);
         }
-
-        [Test]
-        public void DbTest()
-        {
-            var key = EncryptionHelper.GetAesKey("AchievementChat");
-
-        }
     }
 }
