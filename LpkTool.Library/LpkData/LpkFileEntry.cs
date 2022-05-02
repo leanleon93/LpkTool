@@ -120,16 +120,40 @@ namespace LpkTool.Library
             return decompressedBlock;
         }
 
+        private static readonly int _maxDbChunkSize = 1024;
+
         private static byte[] DecryptDbBlock(HeaderEntry fileHeader, BinaryReader br)
         {
             var dbName = GetDbName(fileHeader.FilePath);
             var encryptedBlock = br.ReadBytes(fileHeader.PaddedBLockSizeInBytes);
-            var decryptedBlock = EncryptionHelper.AesDecrypt(encryptedBlock, dbName);
+            var chunks = SplitIntoChunks(encryptedBlock);
+            var decryptedUnpadded = new byte[chunks.Count * _maxDbChunkSize];
+            for (var i = 0; i < chunks.Count; i++)
+            {
+                var chunk = chunks[i];
+                var decryptedChunk = EncryptionHelper.AesDecrypt(chunk, dbName);
+                Array.Copy(decryptedChunk, 0, decryptedUnpadded, (i * _maxDbChunkSize), chunk.Length);
+            }
             var unpadded = new byte[fileHeader.UnpackedFileSizeInBytes];
-            Array.Copy(decryptedBlock, unpadded, unpadded.Length);
+            Array.Copy(decryptedUnpadded, unpadded, unpadded.Length);
             return unpadded;
         }
 
+        private static List<byte[]> SplitIntoChunks(byte[] data)
+        {
+            var pos = 0;
+            var remainingLength = data.Length;
+            var chunks = new List<byte[]>();
+            while (remainingLength >= _maxDbChunkSize)
+            {
+                var chunk = new byte[_maxDbChunkSize];
+                Array.Copy(data, pos, chunk, 0, chunk.Length);
+                chunks.Add(chunk);
+                pos += _maxDbChunkSize;
+                remainingLength -= _maxDbChunkSize;
+            }
+            return chunks;
+        }
 
         private static string GetDbName(string filePath)
         {
