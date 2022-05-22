@@ -361,6 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/LpkTool.Tests/TestData/*.lpk
+
+#Test and Example data - too big for git
+/LpkTool.Tests/TestData/*
+!/LpkTool.Tests/TestData/.keep
 /LpkTool.Examples/ExampleData/*
 !/LpkTool.Examples/ExampleData/.keep

@@ -26,5 +26,18 @@ namespace LpkTool.Examples
             var outPath = Path.Combine(EXAMPLE_DATA, "font_mod.lpk");
             lpk.RepackToFile(outPath);
         }
+
+        public static void RepackWithRoboto(string fontLpkPath, string fontPath, string fontMapPath)
+        {
+            var relativeFontPath = @"\Binaries\Fonts\Roboto-Regular.ttf";
+            var relativeEnFontMapPath = @"\Binaries\Fonts\English\FontMap.xml";
+            var lpk = Lpk.FromFile(fontLpkPath);
+            var directory = Path.GetDirectoryName(fontLpkPath);
+            lpk.AddFile(relativeFontPath, fontPath);
+            var enFontMap = lpk.GetFileByPath(relativeEnFontMapPath);
+            enFontMap.ReplaceData(fontMapPath);
+            lpk.RepackToFile(Path.Combine(directory, "font_mod.lpk"));
+        }
+
     }
 }
