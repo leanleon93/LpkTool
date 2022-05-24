@@ -1,9 +1,4 @@
 ﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LpkTool.Library.DbHelpers
 {
@@ -12,8 +7,10 @@ namespace LpkTool.Library.DbHelpers
     /// </summary>
     public class ItemHelper : IDisposable
     {
-        private string TempDir = Path.Combine(Path.GetTempPath(), "lpktool_" + Guid.NewGuid().ToString());
-        private Lpk _lpk;
+        private readonly string _guid;
+        private Dictionary<string, string> _gameMsgDict;
+        private string TempDir => Path.Combine(Path.GetTempPath(), "lpktool_" + _guid);
+        private readonly Lpk _lpk;
 
         /// <summary>
         /// 
@@ -22,7 +19,38 @@ namespace LpkTool.Library.DbHelpers
         public ItemHelper(Lpk lpk)
         {
             _lpk = lpk;
+            _guid = Guid.NewGuid().ToString();
             Directory.CreateDirectory(TempDir);
+            InitGameMsgDict();
+        }
+
+        private void InitGameMsgDict()
+        {
+            var tempFile = Path.Combine(TempDir, "EFTable_GameMsg.db");
+            if (!File.Exists(tempFile))
+            {
+                File.WriteAllBytes(tempFile, _lpk.GetFileByName("EFTable_GameMsg.db")!.GetData());
+            }
+            var result = new Dictionary<string, string>();
+            using (var connection = new SqliteConnection($"Data Source={tempFile}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $@"SELECT KEY, MSG from GameMsg_English";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var key = reader.GetString(0);
+                        var msg = reader.GetString(1);
+                        result.Add(key, msg);
+                    }
+                }
+                connection.Close();
+                connection.Dispose();
+            }
+            _gameMsgDict = result;
         }
 
         /// <inheritdoc/>
@@ -38,12 +66,91 @@ namespace LpkTool.Library.DbHelpers
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        public Dictionary<int, Dictionary<string, object>> GetAllItems(bool resolvedNames = false)
+        {
+            var result = new Dictionary<int, Dictionary<string, object>>();
+            var tempFile = Path.Combine(TempDir, "EFTable_Item.db");
+            if (!File.Exists(tempFile))
+            {
+                File.WriteAllBytes(tempFile, _lpk.GetFileByName("EFTable_Item.db")!.GetData());
+            }
+            using (var connection = new SqliteConnection($"Data Source={tempFile}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $@"Select * from Item";
+                AddCommandEvaluationToResult(command, ref result, resolvedNames);
+                connection.Close();
+                connection.Dispose();
+            }
+            return result;
+        }
+
+        private void AddCommandEvaluationToResult(SqliteCommand command, ref Dictionary<int, Dictionary<string, object>> result, bool resolvedNames)
+        {
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    object[] objs = new object[reader.FieldCount];
+                    var colNames = new string[reader.FieldCount];
+                    for (int j = 0; j < reader.FieldCount; j++)
+                    {
+                        colNames[j] = reader.GetName(j);
+                    }
+
+                    reader.GetValues(objs);
+                    var resultDict = new Dictionary<string, object>();
+                    int primaryKey = 0;
+                    for (var j = 0; j < objs.Length; j++)
+                    {
+                        var obj = objs[j];
+                        var colname = colNames[j];
+
+                        if (resolvedNames && colname == "Name")
+                        {
+                            var name = GetMsg(obj.ToString());
+                            resultDict.Add(colname, name);
+                        }
+                        else if (resolvedNames && colname == "Desc")
+                        {
+                            var desc = GetMsg(obj.ToString());
+                            resultDict.Add(colname, desc);
+                        }
+                        else if (colname == "PrimaryKey")
+                        {
+                            primaryKey = Convert.ToInt32(obj);
+                            resultDict.Add(colname, obj);
+                        }
+                        else
+                        {
+                            resultDict.Add(colname, obj);
+                        }
+                    }
+                    result.TryAdd(primaryKey, resultDict);
+                }
+            }
+        }
+
+        private string GetMsg(string key)
+        {
+            if (_gameMsgDict.TryGetValue(key, out var msg))
+            {
+                return msg;
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public Dictionary<int, Tuple<string, Dictionary<string, object>>> GetItemsByName(string name)
+        public Dictionary<int, Tuple<string, Dictionary<string, object>>> GetItemsContainingName(string name)
         {
-            var nameKeys = GetNameKeys(name);
-            var items = GetItemsByKeys(nameKeys);
+            var nameKeys = GetMessageKeysContainingName(name);
+            var items = GetItemsByNameKeys(nameKeys);
             return items;
         }
 
@@ -52,9 +159,9 @@ namespace LpkTool.Library.DbHelpers
 
         }
 
-        private int _limit = 499;
+        private readonly int _limit = 499;
 
-        private Dictionary<int, Tuple<string, Dictionary<string, object>>> GetItemsByKeys(Dictionary<string, string> nameKeys)
+        private Dictionary<int, Tuple<string, Dictionary<string, object>>> GetItemsByNameKeys(Dictionary<string, string> nameKeys)
         {
             var result = new Dictionary<int, Tuple<string, Dictionary<string, object>>>();
             var tempFile = Path.Combine(TempDir, "EFTable_Item.db");
@@ -158,33 +265,9 @@ namespace LpkTool.Library.DbHelpers
             return result;
         }
 
-        private Dictionary<string, string> GetNameKeys(string name)
+        private Dictionary<string, string> GetMessageKeysContainingName(string name)
         {
-            var tempFile = Path.Combine(TempDir, "EFTable_GameMsg.db");
-            if (!File.Exists(tempFile))
-            {
-                File.WriteAllBytes(tempFile, _lpk.GetFileByName("EFTable_GameMsg.db")!.GetData());
-            }
-            var result = new Dictionary<string, string>();
-            using (var connection = new SqliteConnection($"Data Source={tempFile}"))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $@"SELECT KEY, MSG from GameMsg_English where MSG Like '%{name}%'";
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var key = reader.GetString(0);
-                        var msg = reader.GetString(1);
-                        result.Add(key, msg);
-                    }
-                }
-                connection.Close();
-                connection.Dispose();
-            }
-            return result;
+            return _gameMsgDict.Where(x => x.Value.Contains(name)).ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }
