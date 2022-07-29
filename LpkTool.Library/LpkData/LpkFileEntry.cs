@@ -89,8 +89,28 @@ namespace LpkTool.Library
             }
             else
             {
+                FixDbData(ref _newData);
                 var data = EncryptDbBlock(ref _headerEntry, _newData);
                 return data;
+            }
+        }
+
+        private static void FixDbData(ref byte[] data)
+        {
+            var dbPageSize = 1008;
+            var dbReservedSpace = 16;
+            using (var ms = new MemoryStream(data))
+            {
+                using (var bw = new BinaryWriter(ms))
+                {
+                    while (bw.BaseStream.Length > bw.BaseStream.Position + dbPageSize)
+                    {
+                        bw.BaseStream.Position += dbPageSize;
+                        var pos = bw.BaseStream.Position;
+                        bw.Write(Enumerable.Repeat<byte>(0x10, dbReservedSpace).ToArray());
+                        bw.BaseStream.Position = pos + dbReservedSpace;
+                    }
+                }
             }
         }
 

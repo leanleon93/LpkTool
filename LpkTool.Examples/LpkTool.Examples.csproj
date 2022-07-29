@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Debug.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="ExampleData\.keep" />
     <None Remove="ExampleData\font.lpk" />
     <None Remove="ExampleData\FontMap.xml" />
