@@ -17,16 +17,15 @@ namespace LpkTool.Examples
         {
             using (var itemHelper = ItemHelper.FromFile(_inPath))
             {
-                //bard alar skin
+                //bard alar skin 322090130 - 332090130
                 //322000632 - 332000632 3rd anniversary bard
-                //322000023 - bikini top bard
+                //322000023 - bikini top bard 322000418
                 //332300578 - white stockings bard
                 //332300579 - black stockings bard
                 //EFDLItem_PC_MAR_HR_01A_Upper.PC_MAR_HR_01A_Upper - Arcana legendary 2 top
                 //332100572 - Arcana legendary 2 bottoms
-                itemHelper.ModelSwap(322100006, "EFDLItem_PC_MAR_HR_01A_Upper.PC_MAR_HR_01A_Upper");
-                itemHelper.ModelSwap(322130089, "EFDLItem_PC_MAR_HR_01A_Upper.PC_MAR_HR_01A_Upper");
-                itemHelper.ModelSwap(332100006, 332100572);
+                //itemHelper.ModelSwap(322090130, 322000417);
+                itemHelper.ModelSwap(332090130, 332300579);
                 itemHelper.RepackToFile(_outPath);
             }
         }

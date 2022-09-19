@@ -74,6 +74,36 @@ namespace LpkTool.Library
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="files"></param>
+        public void ApplySqlFiles(string[] files)
+        {
+            foreach (var file in files)
+            {
+                ApplySqlFile(file);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        public void ApplySqlFile(string file)
+        {
+            try
+            {
+                var sqlFileContent = File.ReadAllLines(file);
+                var fileComment = sqlFileContent.Length > 0 ? sqlFileContent[0] : null;
+                if (fileComment == null || !fileComment.StartsWith("--File:")) return;
+                var dbFileName = fileComment.Replace("--File:", "");
+                var dbFile = GetFileByName(dbFileName);
+                dbFile?.ApplySqlFile(file);
+            }
+            catch { }
+        }
+
+        /// <summary>
         /// Add a new file
         /// </summary>
         /// <param name="relativePath"></param>

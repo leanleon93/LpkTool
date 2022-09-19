@@ -5,7 +5,9 @@ using LpkTool.Library.DbHelpers;
 using Newtonsoft.Json;
 
 
-ModelSwap.Swaps();
+//ModelSwap.Swaps();
 //ModelSwap.Dumps();
+
+var dataPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data.lpk";
 
 //FontChange.RepackWithRoboto(@"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\font.lpk", @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\Roboto-Regular.ttf", @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\FontMap.xml");

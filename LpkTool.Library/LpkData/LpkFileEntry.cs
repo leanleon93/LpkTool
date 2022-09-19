@@ -1,4 +1,6 @@
 ﻿using LpkTool.Library.Helpers;
+using Microsoft.Data.Sqlite;
+using System;
 using System.Text;
 
 namespace LpkTool.Library
@@ -14,6 +16,7 @@ namespace LpkTool.Library
             _lpk = lpk;
             _headerEntry = headerEntry;
             _offset = offset;
+            _guid = Guid.NewGuid().ToString();
         }
 
         internal LpkFileEntry(Lpk lpk, string relativePath, byte[] data, int eof)
@@ -21,6 +24,7 @@ namespace LpkTool.Library
             _lpk = lpk;
             _headerEntry = new HeaderEntry(relativePath);
             _offset = eof;
+            _guid = Guid.NewGuid().ToString();
             ReplaceData(data);
         }
 
@@ -93,6 +97,49 @@ namespace LpkTool.Library
                 var data = EncryptDbBlock(ref _headerEntry, _newData);
                 return data;
             }
+        }
+        private readonly string _guid;
+        private string TempDir => Path.Combine(Path.GetTempPath(), "lpktool_" + _guid);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="files"></param>
+        public void ApplySqlFiles(string[] files)
+        {
+            foreach (var file in files)
+            {
+                ApplySqlFile(file);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        public void ApplySqlFile(string file)
+        {
+            var dbfullname = Path.GetFileName(FilePath);
+            var tempFile = Path.Combine(TempDir, dbfullname);
+            Directory.CreateDirectory(Path.GetDirectoryName(tempFile));
+            if (!File.Exists(tempFile))
+            {
+                File.WriteAllBytes(tempFile, GetData());
+            }
+            using (var connection = new SqliteConnection($"Data Source={tempFile}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = File.ReadAllText(file);
+                command.ExecuteNonQuery();
+                connection.Close();
+                connection.Dispose();
+            }
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            GC.Collect();
+            ReplaceData(tempFile);
+            File.Delete(tempFile);
+            Directory.Delete(Path.GetDirectoryName(tempFile), true);
         }
 
         private static void FixDbData(ref byte[] data)
