@@ -93,7 +93,7 @@ namespace LpkTool.Library.DbHelpers
             return result;
         }
 
-        private List<string> KeyWhitelist = new List<string> {
+        private readonly List<string> KeyWhitelist = new List<string> {
             "PrimaryKey",
             "Name",
             "Comment",

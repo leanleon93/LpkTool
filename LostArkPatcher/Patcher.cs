@@ -11,7 +11,8 @@ namespace LostArkPatcher
             var exportsDir = Path.Combine(docPath, "LostArk", "exports");
             if (!Directory.Exists(patchesDir))
             {
-                Console.WriteLine(patchesDir + " does not exist.\nPlease create the directory and place patches inside.");
+                Directory.CreateDirectory(patchesDir);
+                Console.WriteLine($"Please place patches in: {patchesDir}.");
                 return;
             }
             var allFiles = Directory.GetFiles(patchesDir);
@@ -41,20 +42,52 @@ namespace LostArkPatcher
             var allPatches = allFiles.Where(x => Path.GetExtension(x) == ".sql").ToArray();
             if (allPatches.Length <= 0)
             {
-                Console.WriteLine("No patches found in " + patchesDir);
+                Console.WriteLine("No patches found in: " + patchesDir);
                 return;
             }
             else
             {
-                Console.WriteLine($"{allPatches.Length} patches found.\nApplying:");
+                int fails = 0;
+                Console.WriteLine($"{allPatches.Length} patches found.\nApplying:\n");
                 foreach (var file in allPatches)
                 {
-                    Console.WriteLine($"\t-{Path.GetFileNameWithoutExtension(file)}");
+                    WriteInColor(ConsoleColor.Cyan, $"\t-{Path.GetFileNameWithoutExtension(file)}");
+                    Console.Write($" ->");
+                    var success = lpk.ApplySqlFile(file);
+                    if (success)
+                    {
+                        WriteLineInColor(ConsoleColor.Green, " done");
+                    }
+                    else
+                    {
+                        WriteLineInColor(ConsoleColor.Red, " failed");
+                        fails++;
+                    }
+                }
+                if (fails > 0)
+                {
+                    WriteLineInColor(ConsoleColor.DarkYellow, $"\n{fails} {(fails == 1 ? "patch" : "patches")} not applied!");
                 }
             }
-            lpk.ApplySqlFiles(allPatches);
+
+            Console.Write("\nRepacking ->");
             lpk.RepackToFile(dataPath);
-            Console.WriteLine("Done");
+            WriteLineInColor(ConsoleColor.Green, " done");
         }
+
+        internal static void WriteInColor(ConsoleColor color, string text)
+        {
+            Console.ForegroundColor = color;
+            Console.Write(text);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        internal static void WriteLineInColor(ConsoleColor color, string text)
+        {
+            Console.ForegroundColor = color;
+            Console.WriteLine(text);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
     }
 }

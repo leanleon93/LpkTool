@@ -5,6 +5,9 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Authors>LEaN</Authors>
+    <Company>$(Authors)</Company>
+    <Copyright>$(Company)</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

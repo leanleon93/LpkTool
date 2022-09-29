@@ -1,8 +1,4 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using LpkTool.Examples;
-using LpkTool.Library;
-using LpkTool.Library.DbHelpers;
-using Newtonsoft.Json;
 
 
 //ModelSwap.Swaps();

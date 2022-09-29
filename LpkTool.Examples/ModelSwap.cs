@@ -1,18 +1,13 @@
 ﻿using LpkTool.Library;
 using LpkTool.Library.DbHelpers;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LpkTool.Examples
 {
     internal class ModelSwap
     {
-        private static string _inPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data.lpk";
-        private static string _outPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data.lpk";
+        private static readonly string _inPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data.lpk";
+        private static readonly string _outPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data.lpk";
         public static void Swaps()
         {
             using (var itemHelper = ItemHelper.FromFile(_inPath))

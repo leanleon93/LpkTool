@@ -1,6 +1,5 @@
 ﻿using LpkTool.Library.Helpers;
 using Microsoft.Data.Sqlite;
-using System;
 using System.Text;
 
 namespace LpkTool.Library

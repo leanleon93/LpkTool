@@ -77,30 +77,40 @@ namespace LpkTool.Library
         /// 
         /// </summary>
         /// <param name="files"></param>
-        public void ApplySqlFiles(string[] files)
+        public bool ApplySqlFiles(string[] files)
         {
+            var allSucceeded = true;
             foreach (var file in files)
             {
-                ApplySqlFile(file);
+                if (!ApplySqlFile(file))
+                {
+                    allSucceeded = false;
+                }
             }
+            return allSucceeded;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="file"></param>
-        public void ApplySqlFile(string file)
+        public bool ApplySqlFile(string file)
         {
             try
             {
                 var sqlFileContent = File.ReadAllLines(file);
                 var fileComment = sqlFileContent.Length > 0 ? sqlFileContent[0] : null;
-                if (fileComment == null || !fileComment.StartsWith("--File:")) return;
+                if (fileComment == null || !fileComment.StartsWith("--File:")) return false;
                 var dbFileName = fileComment.Replace("--File:", "");
                 var dbFile = GetFileByName(dbFileName);
+                if (dbFile == null) return false;
                 dbFile?.ApplySqlFile(file);
+                return true;
             }
-            catch { }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
