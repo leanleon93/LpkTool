@@ -28,17 +28,23 @@ namespace LostArkPatcher
                 File.WriteAllLines(outPath, dbNames);
                 File.Delete(listFile);
             }
-            foreach (var file in exportFiles)
+            if (exportFiles.Length > 0)
             {
-                var dbFileName = Path.GetFileNameWithoutExtension(file) + ".db";
-                var exportFile = lpk.GetFileByName(dbFileName);
-                if (exportFile != null)
+                Console.Write("Running exports: ");
+                foreach (var file in exportFiles)
                 {
-                    Directory.CreateDirectory(exportsDir);
-                    var exportPath = Path.Combine(exportsDir, dbFileName);
-                    File.WriteAllBytes(exportPath, exportFile.GetData());
+                    var dbFileName = Path.GetFileNameWithoutExtension(file) + ".db";
+                    var exportFile = lpk.GetFileByName(dbFileName);
+                    if (exportFile != null)
+                    {
+                        Directory.CreateDirectory(exportsDir);
+                        var exportPath = Path.Combine(exportsDir, dbFileName);
+                        File.WriteAllBytes(exportPath, exportFile.GetData());
+                    }
                 }
+                WriteLineInColor(ConsoleColor.Green, " done.\n");
             }
+
             var allPatches = allFiles.Where(x => Path.GetExtension(x) == ".sql").ToArray();
             if (allPatches.Length <= 0)
             {

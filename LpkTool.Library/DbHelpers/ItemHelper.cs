@@ -3,7 +3,7 @@
 namespace LpkTool.Library.DbHelpers
 {
     /// <summary>
-    /// 
+    /// Pretty much unused
     /// </summary>
     public class ItemHelper : IDisposable
     {
