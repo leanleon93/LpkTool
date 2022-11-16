@@ -6,6 +6,11 @@
 //ModelSwap.Swaps();
 //ModelSwap.Dumps();
 
-var dataPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data.lpk";
+using LpkTool.Library;
+
+var dataPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data2.lpk";
+var outDir = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\out";
+var lpk = Lpk.FromFile(dataPath);
+lpk.Export(outDir);
 
 //FontChange.RepackWithRoboto(@"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\font.lpk", @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\Roboto-Regular.ttf", @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\FontMap.xml");

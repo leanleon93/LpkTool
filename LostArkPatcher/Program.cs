@@ -5,6 +5,7 @@ namespace LostArkPatcher
 {
     internal class Program
     {
+        private static readonly string DataFileName = "data2.lpk";
         //Place Patches in Documents/LostArk/Patches
         private static void Main()
         {
@@ -33,7 +34,7 @@ namespace LostArkPatcher
             }
             else
             {
-                var dataPath = Path.Combine(lostArkInstallDir, "EFGame", "data.lpk");
+                var dataPath = Path.Combine(lostArkInstallDir, "EFGame", DataFileName);
                 try
                 {
                     Patcher.ApplyAllPatches(dataPath);
