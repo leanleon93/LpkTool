@@ -6,8 +6,8 @@ namespace LpkTool.Examples
 {
     internal class ModelSwap
     {
-        private static readonly string _inPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data.lpk";
-        private static readonly string _outPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data.lpk";
+        private static readonly string _inPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data2.lpk";
+        private static readonly string _outPath = @"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data2.lpk";
         public static void Swaps()
         {
             using (var itemHelper = ItemHelper.FromFile(_inPath))
@@ -30,10 +30,10 @@ namespace LpkTool.Examples
 
             using var itemHelper = new ItemHelper(lpk);
 
-            var bardOutfits = itemHelper.GetOutfitsForClass("ForArcana");
+            var bardOutfits = itemHelper.GetOutfitsForClass("ForReaper");
 
             var json = JsonConvert.SerializeObject(bardOutfits, Formatting.Indented);
-            File.WriteAllText(@"C:\Users\leanw\Documents\quickbms\eu\out\arcanaOutfits.json", json);
+            File.WriteAllText(@"C:\Users\leanw\Documents\quickbms\eu\out\reaperOutfits.json", json);
         }
     }
 }
