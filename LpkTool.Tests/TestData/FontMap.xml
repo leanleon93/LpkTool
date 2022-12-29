@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FontMap>
+  <Item Key="$YG760" File="ExuberanceD-Regular.ttf" />
+  <Item Key="$YG760_12pt" File="ExuberanceD-Regular.ttf" SizeCorrectionRatio="120" />
+  <Item Key="$YG330" File="ExuberanceD-Regular.ttf" />
+  <Item Key="$YoonGasiIIM" File="MonarchaD-Regular.ttf" LeadingCorrection="-200" />
+  <Item Key="$YoonGasiIIM_Small2pt" File="MonarchaD-Regular.ttf" LeadingCorrection="-200" SizeCorrectionRatio="120" />
+  <Item Key="$WitcherFont" File="PFDINTextCondStd-Light.otf" />
+</FontMap>
