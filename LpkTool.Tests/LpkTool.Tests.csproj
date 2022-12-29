@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="LoaTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="TestData\.keep" />
     <None Remove="TestData\ActionCategory.loa" />
     <None Remove="TestData\ColorOption.loa" />

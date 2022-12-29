@@ -19,6 +19,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="LoaData\**" />
+	  <EmbeddedResource Remove="LoaData\**" />
+	  <None Remove="LoaData\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="DbHelpers\BuffDebuffEnabler.cs" />
+	  <Compile Remove="DbHelpers\SkillBuff.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Include="..\lostark_logo.jpg">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
