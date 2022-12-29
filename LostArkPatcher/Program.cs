@@ -6,6 +6,7 @@ namespace LostArkPatcher
     internal class Program
     {
         private static readonly string DataFileName = "data2.lpk";
+        private static readonly string FontFileName = "font.lpk";
         //Place Patches in Documents/LostArk/Patches
         private static void Main()
         {
@@ -35,9 +36,10 @@ namespace LostArkPatcher
             else
             {
                 var dataPath = Path.Combine(lostArkInstallDir, "EFGame", DataFileName);
+                var fontPath = Path.Combine(lostArkInstallDir, "EFGame", FontFileName);
                 try
                 {
-                    Patcher.ApplyAllPatches(dataPath);
+                    Patcher.ApplyAllPatches(dataPath, fontPath);
                 }
                 catch (IOException)
                 {
