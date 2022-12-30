@@ -130,6 +130,12 @@ namespace LpkTool.Library
         /// <param name="fileData"></param>
         public void AddFile(string relativePath, byte[] fileData)
         {
+            if (Files.Find(x => x.FilePath == relativePath) != null)
+            {
+                //file already exists
+                return;
+            }
+
             Files.Add(new LpkFileEntry(this, relativePath, fileData, _eof));
         }
 
