@@ -43,15 +43,7 @@ namespace LpkTool.Library
         public LpkFileEntry? GetFileByPath(string filepath)
         {
             var fileEntry = Files.Where(x => x.FilePath.ToLower() == filepath.ToLower()).FirstOrDefault();
-            if (fileEntry != null)
-            {
-                using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
-                using (var br = new BinaryReader(stream))
-                {
-                    return fileEntry;
-                }
-            }
-            return null;
+            return fileEntry;
         }
 
         /// <summary>
@@ -62,15 +54,7 @@ namespace LpkTool.Library
         public LpkFileEntry? GetFileByName(string filename)
         {
             var fileEntry = Files.Where(x => Path.GetFileName(x.FilePath).ToLower() == filename.ToLower()).FirstOrDefault();
-            if (fileEntry != null)
-            {
-                using (Stream stream = _isFile ? new FileStream(_filePath!, FileMode.Open) : new MemoryStream(_fileBuffer!))
-                using (var br = new BinaryReader(stream))
-                {
-                    return fileEntry;
-                }
-            }
-            return null;
+            return fileEntry;
         }
 
         /// <summary>
@@ -118,9 +102,10 @@ namespace LpkTool.Library
         /// </summary>
         /// <param name="relativePath"></param>
         /// <param name="filePath"></param>
-        public void AddFile(string relativePath, string filePath)
+        /// <param name="overwriteExisting"></param>
+        public void AddFile(string relativePath, string filePath, bool overwriteExisting = false)
         {
-            AddFile(relativePath, File.ReadAllBytes(filePath));
+            AddFile(relativePath, File.ReadAllBytes(filePath), overwriteExisting);
         }
 
         /// <summary>
@@ -128,15 +113,25 @@ namespace LpkTool.Library
         /// </summary>
         /// <param name="relativePath"></param>
         /// <param name="fileData"></param>
-        public void AddFile(string relativePath, byte[] fileData)
+        /// <param name="overwriteExisting"></param>
+        public void AddFile(string relativePath, byte[] fileData, bool overwriteExisting = false)
         {
-            if (Files.Find(x => x.FilePath == relativePath) != null)
+            var fileEntry = GetFileByPath(relativePath);
+            if (fileEntry != null)
             {
-                //file already exists
-                return;
+                if (overwriteExisting)
+                {
+                    fileEntry.ReplaceData(fileData);
+                }
+                else
+                {
+                    return;
+                }
             }
-
-            Files.Add(new LpkFileEntry(this, relativePath, fileData, _eof));
+            else
+            {
+                Files.Add(new LpkFileEntry(this, relativePath, fileData, _eof));
+            }
         }
 
         /// <summary>
