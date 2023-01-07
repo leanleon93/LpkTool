@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LpkTool.Examples", "LpkTool
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostArkPatcher", "LostArkPatcher\LostArkPatcher.csproj", "{DC564121-91E7-4CE5-8E72-71F40BE44C68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LpkExport", "LpkExport\LpkExport.csproj", "{F26B9B68-7636-4A9F-923A-8D4F4C1812ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LpkExport", "LpkExport\LpkExport.csproj", "{F26B9B68-7636-4A9F-923A-8D4F4C1812ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

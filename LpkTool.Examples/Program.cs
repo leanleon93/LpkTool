@@ -1,8 +1,8 @@
 ﻿//Testing Project
 
 using LpkTool.Library;
+using LpkTool.Library.LoaData.Table_MovieData;
 using Microsoft.Win32;
-
 
 internal class Program
 {
@@ -12,19 +12,20 @@ internal class Program
         var efGamePath = Path.Combine(lostArkInstallDir, "EFGame");
 
         var baseName = "data{0}.lpk";
-        var outDir = Path.Combine(efGamePath, "out");
-        var fontPath = Path.Combine(efGamePath, "font.lpk");
+        var lpkFilePath = Path.Combine(efGamePath, string.Format(baseName, 1));
 
-        Console.WriteLine("Unpacking font");
-        var lpk1 = Lpk.FromFile(fontPath);
-        lpk1.Export(outDir);
+        var lpk = Lpk.FromFile(lpkFilePath);
+        var file = lpk.GetFileByName("Table_MovieData.loa");
+        if (file == null) return;
+        var movieData = MovieData.FromByteArray(file.GetData());
 
-        for (var i = 1; i <= 4; i++)
-        {
-            Console.WriteLine("Unpacking " + i);
-            var filePath = Path.Combine(efGamePath, string.Format(baseName, i));
-            var lpk = Lpk.FromFile(filePath);
-            lpk.Export(outDir);
-        }
+        var introContainer = movieData.MovieDataContainers.FirstOrDefault(x => x.Key == "FullScreen.Intro");
+        if (introContainer == null) return;
+        introContainer.MovieDataValueArray = new MovieDataValue[0];
+
+        var newData = movieData.Serialize();
+
+        file.ReplaceData(newData);
+        lpk.RepackToFile(lpkFilePath);
     }
 }

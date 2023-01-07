@@ -19,14 +19,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="LoaData\**" />
-	  <EmbeddedResource Remove="LoaData\**" />
-	  <None Remove="LoaData\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Compile Remove="DbHelpers\BuffDebuffEnabler.cs" />
 	  <Compile Remove="DbHelpers\SkillBuff.cs" />
+	  <Compile Remove="LoaData\Loa.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
