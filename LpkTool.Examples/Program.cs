@@ -17,7 +17,7 @@ internal class Program
         var lpk = Lpk.FromFile(lpkFilePath);
         var file = lpk.GetFileByName("Table_MovieData.loa");
         if (file == null) return;
-        var movieData = MovieData.FromByteArray(file.GetData());
+        var movieData = new MovieData(file.GetData());
 
         var introContainer = movieData.MovieDataContainers.FirstOrDefault(x => x.Key == "FullScreen.Intro");
         if (introContainer == null) return;

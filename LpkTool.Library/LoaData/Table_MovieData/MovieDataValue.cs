@@ -2,6 +2,12 @@
 {
     public class MovieDataValue
     {
+        public MovieDataValue() { }
+        public MovieDataValue(BinaryReader br)
+        {
+            Deserialize(br);
+        }
+
         public string Unk { get; set; }
         public string FileName { get; set; }
         public int FileNameUnk { get; set; }
@@ -9,29 +15,25 @@
         public int DefaultAudioVolumeRate { get; set; }
         public int ReadBufferSize { get; set; }
 
-        internal static MovieDataValue Deserialize(BinaryReader br)
+        internal void Deserialize(BinaryReader br)
         {
-            var movieDataValue = new MovieDataValue();
-
             var unk = br.ReadStringLoa();
-            movieDataValue.Unk = unk;
+            Unk = unk;
 
             var fileName = br.ReadKvpLoa<string>();
-            movieDataValue.FileName = fileName.Value;
+            FileName = fileName.Value;
 
             var fileNameUnk = br.ReadKvpLoa<int>();
-            movieDataValue.FileNameUnk = fileNameUnk.Value;
+            FileNameUnk = fileNameUnk.Value;
 
             var loop = br.ReadKvpLoa<bool>();
-            movieDataValue.Loop = loop.Value;
+            Loop = loop.Value;
 
             var defaultAudioVolumeRate = br.ReadKvpLoa<int>();
-            movieDataValue.DefaultAudioVolumeRate = defaultAudioVolumeRate.Value;
+            DefaultAudioVolumeRate = defaultAudioVolumeRate.Value;
 
             var readBufferSize = br.ReadKvpLoa<int>();
-            movieDataValue.ReadBufferSize = readBufferSize.Value;
-
-            return movieDataValue;
+            ReadBufferSize = readBufferSize.Value;
         }
 
         internal byte[] Serialize()

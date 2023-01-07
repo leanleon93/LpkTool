@@ -2,6 +2,14 @@
 {
     public class MovieDataContainer
     {
+
+        public MovieDataContainer() { }
+
+        public MovieDataContainer(BinaryReader br)
+        {
+            Deserialize(br);
+        }
+
         public string Unk { get; set; }
         public string Key { get; set; }
         public int MoviePlayType { get; set; }
@@ -14,48 +22,44 @@
         public string Unk2 { get; set; }
         public MovieDataValue[] MovieDataValueArray { get; set; }
 
-        internal static MovieDataContainer Deserialize(BinaryReader br)
+        internal void Deserialize(BinaryReader br)
         {
-            var movieDataContainer = new MovieDataContainer();
-
             var unk = br.ReadStringLoa();
-            movieDataContainer.Unk = unk;
+            Unk = unk;
 
             var key = br.ReadKvpLoa<string>();
-            movieDataContainer.Key = key.Value;
+            Key = key.Value;
 
             var moviePlayType = br.ReadKvpLoa<int>();
-            movieDataContainer.MoviePlayType = moviePlayType.Value;
+            MoviePlayType = moviePlayType.Value;
 
             var loopContainer = br.ReadKvpLoa<bool>();
-            movieDataContainer.LoopContainer = loopContainer.Value;
+            LoopContainer = loopContainer.Value;
 
             var gameThreadWait = br.ReadKvpLoa<bool>();
-            movieDataContainer.GameThreadWait = gameThreadWait.Value;
+            GameThreadWait = gameThreadWait.Value;
 
             var targetTextBindingId = br.ReadKvpLoa<string>();
-            movieDataContainer.TargetTexBindingId = targetTextBindingId.Value;
+            TargetTexBindingId = targetTextBindingId.Value;
 
             var targetStretch = br.ReadKvpLoa<bool>();
-            movieDataContainer.TargetStretch = targetStretch.Value;
+            TargetStretch = targetStretch.Value;
 
             var targetWidth = br.ReadKvpLoa<int>();
-            movieDataContainer.TargetWidth = targetWidth.Value;
+            TargetWidth = targetWidth.Value;
 
             var targetHeight = br.ReadKvpLoa<int>();
-            movieDataContainer.TargetHeight = targetHeight.Value;
+            TargetHeight = targetHeight.Value;
 
             var unk2 = br.ReadStringLoa();
-            movieDataContainer.Unk2 = unk2;
+            Unk2 = unk2;
 
-            movieDataContainer.MovieDataValueArray = new MovieDataValue[br.ReadInt32()];
-            for (int j = 0; j < movieDataContainer.MovieDataValueArray.Length; j++)
+            MovieDataValueArray = new MovieDataValue[br.ReadInt32()];
+            for (int j = 0; j < MovieDataValueArray.Length; j++)
             {
-                var movieDataValue = MovieDataValue.Deserialize(br);
-                movieDataContainer.MovieDataValueArray[j] = movieDataValue;
+                var movieDataValue = new MovieDataValue(br);
+                MovieDataValueArray[j] = movieDataValue;
             }
-
-            return movieDataContainer;
         }
 
         internal byte[] Serialize()

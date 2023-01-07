@@ -21,6 +21,8 @@
     <None Remove="TestData\FontMap.xml" />
     <None Remove="TestData\FunctionNPCLocation.loa" />
     <None Remove="TestData\IconInfo.loa" />
+    <None Remove="TestData\loa\101901.loa" />
+    <None Remove="TestData\loa\Table_MovieData.loa" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +48,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\IconInfo.loa">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\loa\101901.loa">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\loa\Table_MovieData.loa">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

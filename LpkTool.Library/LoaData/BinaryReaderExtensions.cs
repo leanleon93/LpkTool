@@ -8,22 +8,30 @@ namespace LpkTool.Library.LoaData
         {
             var length = br.ReadInt32();
             if (length == 0) return "";
-            var prefPos = br.BaseStream.Position;
-            br.BaseStream.Seek(length - 1, SeekOrigin.Current);
-            if (br.BaseStream.Position > br.BaseStream.Length || br.ReadByte() != 0)
+            if (length < 0)
             {
-                var result = length.ToString();
-                br.BaseStream.Position = prefPos;
-                return result;
+                return ReadStringUnicode(br, length);
             }
             else
             {
-                br.BaseStream.Position = prefPos;
+                return ReadStringUtf8(br, length);
             }
+        }
 
+        private static string ReadStringUtf8(BinaryReader br, int length)
+        {
             var strBytes = br.ReadBytes(length - 1);
             var str = Encoding.UTF8.GetString(strBytes);
             br.BaseStream.Seek(1, SeekOrigin.Current);
+            return str;
+        }
+
+        private static string ReadStringUnicode(BinaryReader br, int length)
+        {
+            var unicodeLength = Math.Abs(length) * 2;
+            var strBytes = br.ReadBytes(unicodeLength - 2);
+            var str = Encoding.Unicode.GetString(strBytes);
+            br.BaseStream.Seek(2, SeekOrigin.Current);
             return str;
         }
 

@@ -21,7 +21,6 @@
 	<ItemGroup>
 	  <Compile Remove="DbHelpers\BuffDebuffEnabler.cs" />
 	  <Compile Remove="DbHelpers\SkillBuff.cs" />
-	  <Compile Remove="LoaData\Loa.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

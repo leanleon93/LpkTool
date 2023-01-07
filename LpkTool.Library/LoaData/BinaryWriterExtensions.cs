@@ -4,7 +4,7 @@ namespace LpkTool.Library.LoaData
 {
     public static class BinaryWriterExtensions
     {
-        public static void WriteStringLoa(this BinaryWriter bw, string text)
+        public static void WriteStringLoa(this BinaryWriter bw, string text, bool unicode = false)
         {
             var length = text.Length;
             if (length == 0)
@@ -12,11 +12,32 @@ namespace LpkTool.Library.LoaData
                 bw.Write(length);
                 return;
             }
+            if (unicode)
+            {
+                WriteStringUnicode(bw, text, length);
+            }
+            else
+            {
+                WriteStringUtf8(bw, text, length);
+            }
+        }
+
+        private static void WriteStringUtf8(BinaryWriter bw, string text, int length)
+        {
             bw.Write(length + 1);
             var textData = Encoding.UTF8.GetBytes(text);
             bw.Write(textData);
             bw.Write((byte)0);
-            return;
+        }
+
+        private static void WriteStringUnicode(BinaryWriter bw, string text, int length)
+        {
+            var unicodeLength = 0 - length - 1;
+            bw.Write(unicodeLength);
+            var textData = Encoding.Unicode.GetBytes(text);
+            bw.Write(textData);
+            bw.Write((byte)0);
+            bw.Write((byte)0);
         }
 
         internal static KeyValuePair<string, T> KvpFromProp<T>(string key, T value)
