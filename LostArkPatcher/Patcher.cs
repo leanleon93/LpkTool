@@ -1,15 +1,26 @@
 ﻿using LpkTool.Library;
 using LpkTool.Library.Helpers;
+using LpkTool.Library.LoaData.Table_MovieData;
 
 namespace LostArkPatcher
 {
-    public static class Patcher
+    public class Patcher
     {
-        private static readonly string _docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        private static readonly string _exportsDir = Path.Combine(_docPath, "LostArk", "exports");
-        private static readonly string _patchesDir = Path.Combine(_docPath, "LostArk", "patches");
+        private readonly string _exportsDir;
+        private readonly string _patchesDir;
+        private readonly string _efGameDir;
+        private const string DATAFILE_NAME_BASE = "data{0}.lpk";
+        private const string FONT_FILE_NAME = "font.lpk";
 
-        public static void ApplyAllPatches(string dataPath, string fontPath)
+        public Patcher(string lostarkInstallDir)
+        {
+            var docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            _exportsDir = Path.Combine(docPath, "LostArk", "exports");
+            _patchesDir = Path.Combine(docPath, "LostArk", "patches");
+            _efGameDir = Path.Combine(lostarkInstallDir, "EFGame");
+        }
+
+        public void ApplyAllPatches()
         {
             if (!Directory.Exists(_patchesDir))
             {
@@ -18,23 +29,49 @@ namespace LostArkPatcher
                 return;
             }
             var allFiles = Directory.GetFiles(_patchesDir);
-            var lpk = Lpk.FromFile(dataPath);
 
-            ApplyExports(lpk, allFiles);
-            ApplyList(lpk, allFiles);
+            var data1Path = Path.Combine(_efGameDir, string.Format(DATAFILE_NAME_BASE, 1));
+            var data2Path = Path.Combine(_efGameDir, string.Format(DATAFILE_NAME_BASE, 2));
+            var fontPath = Path.Combine(_efGameDir, FONT_FILE_NAME);
+
+            var data2Lpk = Lpk.FromFile(data2Path);
+
+            ApplyExports(data2Lpk, allFiles);
+            ApplyList(data2Lpk, allFiles);
             ApplyFontSwap(fontPath, allFiles);
 
-            var requireDataRepack = ApplyPatches(lpk, allFiles);
+            ApplyFasterStartup(data1Path, allFiles);
 
-            if (requireDataRepack)
+            if (ApplyPatches(data2Lpk, allFiles))
             {
-                Console.Write("\nRepacking data ->");
-                lpk.RepackToFile(dataPath);
+                Console.Write("\nRepacking data2 ->");
+                data2Lpk.RepackToFile(data2Path);
                 WriteLineInColor(ConsoleColor.Green, " done");
             }
         }
 
-        private static void ApplyFontSwap(string fontPath, string[] allFiles)
+        private static void ApplyFasterStartup(string lpkPath, string[] allFiles)
+        {
+            var fasterStartupFile = allFiles.FirstOrDefault(x => Path.GetFileName(x) == "fastStartup");
+            if (fasterStartupFile == null) return;
+            Console.Write("Applying faster startup -> ");
+            var lpk = Lpk.FromFile(lpkPath);
+            var file = lpk.GetFileByName("Table_MovieData.loa");
+            if (file == null) return;
+            var movieData = MovieData.FromByteArray(file.GetData());
+
+            var introContainer = movieData.MovieDataContainers.FirstOrDefault(x => x.Key == "FullScreen.Intro");
+            if (introContainer == null) return;
+            introContainer.MovieDataValueArray = new MovieDataValue[0];
+
+            var newData = movieData.Serialize();
+
+            file.ReplaceData(newData);
+            lpk.RepackToFile(lpkPath);
+            WriteLineInColor(ConsoleColor.Green, "done\n");
+        }
+
+        private void ApplyFontSwap(string fontPath, string[] allFiles)
         {
             var fontswapFilePath = allFiles.FirstOrDefault(x => Path.GetFileName(x) == "font");
             if (fontswapFilePath == null) return;
@@ -61,7 +98,7 @@ namespace LostArkPatcher
             Console.WriteLine();
         }
 
-        private static bool ApplyPatches(Lpk lpk, string[] allFiles)
+        private bool ApplyPatches(Lpk lpk, string[] allFiles)
         {
             var allPatches = allFiles.Where(x => Path.GetExtension(x) == ".sql").ToArray();
             if (allPatches.Length <= 0)
@@ -96,7 +133,7 @@ namespace LostArkPatcher
             return true;
         }
 
-        private static void ApplyList(Lpk lpk, string[] allFiles)
+        private void ApplyList(Lpk lpk, string[] allFiles)
         {
             var listFile = allFiles.FirstOrDefault(x => Path.GetFileName(x).ToLower() == "list");
             if (listFile != null)
@@ -110,7 +147,7 @@ namespace LostArkPatcher
             }
         }
 
-        private static void ApplyExports(Lpk lpk, string[] allFiles)
+        private void ApplyExports(Lpk lpk, string[] allFiles)
         {
             var exportFiles = allFiles.Where(x => Path.GetExtension(x) == ".export").ToArray();
 
