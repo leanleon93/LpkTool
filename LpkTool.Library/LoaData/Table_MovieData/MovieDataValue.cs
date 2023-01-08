@@ -1,11 +1,13 @@
 ﻿namespace LpkTool.Library.LoaData.Table_MovieData
 {
-    public class MovieDataValue
+    public class MovieDataValue : LoaSubclass
     {
-        public MovieDataValue() { }
-        public MovieDataValue(BinaryReader br)
+        public MovieDataValue()
         {
-            Deserialize(br);
+        }
+
+        public MovieDataValue(BinaryReader br) : base(br)
+        {
         }
 
         public string Unk { get; set; }
@@ -15,7 +17,7 @@
         public int DefaultAudioVolumeRate { get; set; }
         public int ReadBufferSize { get; set; }
 
-        internal void Deserialize(BinaryReader br)
+        protected override void Deserialize(BinaryReader br)
         {
             var unk = br.ReadStringLoa();
             Unk = unk;
@@ -36,7 +38,7 @@
             ReadBufferSize = readBufferSize.Value;
         }
 
-        internal byte[] Serialize()
+        public override byte[] Serialize()
         {
             using (var ms = new MemoryStream())
             {
@@ -53,6 +55,5 @@
                 return ms.ToArray();
             }
         }
-
     }
 }

@@ -18,18 +18,9 @@
         public string ContainerName { get; set; }
         public MovieDataContainer[] MovieDataContainers { get; set; }
 
-        protected override void SerializeDetails(BinaryWriter bw)
+        protected override void Deserialize(BinaryReader br)
         {
-            bw.WriteStringLoa(ContainerName);
-            bw.Write(MovieDataContainers.Length);
-            foreach (var movieDataContainer in MovieDataContainers)
-            {
-                bw.Write(movieDataContainer.Serialize());
-            }
-        }
-
-        protected override void DeserializeDetails(BinaryReader br)
-        {
+            base.DeserializeHeader(br);
             var unk2 = br.ReadStringLoa();
             ContainerName = unk2;
 
@@ -38,6 +29,24 @@
             {
                 var movieDataContainer = new MovieDataContainer(br);
                 MovieDataContainers[i] = movieDataContainer;
+            }
+        }
+
+        public override byte[] Serialize()
+        {
+            using (var ms = new MemoryStream())
+            {
+                using (var bw = new BinaryWriter(ms))
+                {
+                    bw.Write(base.SerializeHeader());
+                    bw.WriteStringLoa(ContainerName);
+                    bw.Write(MovieDataContainers.Length);
+                    foreach (var movieDataContainer in MovieDataContainers)
+                    {
+                        bw.Write(movieDataContainer.Serialize());
+                    }
+                }
+                return ms.ToArray();
             }
         }
     }

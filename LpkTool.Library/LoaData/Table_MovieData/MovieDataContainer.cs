@@ -1,13 +1,13 @@
 ﻿namespace LpkTool.Library.LoaData.Table_MovieData
 {
-    public class MovieDataContainer
+    public class MovieDataContainer : LoaSubclass
     {
-
-        public MovieDataContainer() { }
-
-        public MovieDataContainer(BinaryReader br)
+        public MovieDataContainer()
         {
-            Deserialize(br);
+        }
+
+        public MovieDataContainer(BinaryReader br) : base(br)
+        {
         }
 
         public string Unk { get; set; }
@@ -22,7 +22,7 @@
         public string Unk2 { get; set; }
         public MovieDataValue[] MovieDataValueArray { get; set; }
 
-        internal void Deserialize(BinaryReader br)
+        protected override void Deserialize(BinaryReader br)
         {
             var unk = br.ReadStringLoa();
             Unk = unk;
@@ -62,7 +62,7 @@
             }
         }
 
-        internal byte[] Serialize()
+        public override byte[] Serialize()
         {
             using (var ms = new MemoryStream())
             {

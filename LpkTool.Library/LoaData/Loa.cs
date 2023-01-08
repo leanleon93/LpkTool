@@ -1,14 +1,6 @@
-﻿using LpkTool.Library.LoaData.Table_MovieData;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LpkTool.Library.LoaData
+﻿namespace LpkTool.Library.LoaData
 {
-    public abstract class Loa
+    public abstract class Loa : ILoaSerializable
     {
         public byte[] Magic { get; set; }
         public int FileId { get; set; }
@@ -19,32 +11,46 @@ namespace LpkTool.Library.LoaData
 
         public Loa(Stream stream)
         {
-            Deserialize(stream);
+            using (var br = new BinaryReader(stream))
+            {
+                Deserialize(br);
+            }
         }
 
         public Loa(string filePath)
         {
-            Deserialize(File.OpenRead(filePath));
+            using (var stream = File.OpenRead(filePath))
+            {
+                using (var br = new BinaryReader(stream))
+                {
+                    Deserialize(br);
+                }
+            }
         }
 
         public Loa(byte[] data)
         {
-            Deserialize(new MemoryStream(data));
-        }
-
-        private void Deserialize(Stream stream)
-        {
-            using (var br = new BinaryReader(stream))
+            using (var ms = new MemoryStream(data))
             {
-                Magic = br.ReadBytes(4);
-                FileId = br.ReadInt32();
-                FileSecondaryId = br.ReadInt32();
-                Unk = br.ReadStringLoa();
-                DeserializeDetails(br);
+                using (var br = new BinaryReader(ms))
+                {
+                    Deserialize(br);
+                }
             }
         }
 
-        public byte[] Serialize()
+        protected abstract void Deserialize(BinaryReader br);
+        public abstract byte[] Serialize();
+
+        protected void DeserializeHeader(BinaryReader br)
+        {
+            Magic = br.ReadBytes(4);
+            FileId = br.ReadInt32();
+            FileSecondaryId = br.ReadInt32();
+            Unk = br.ReadStringLoa();
+        }
+
+        protected byte[] SerializeHeader()
         {
             using (var ms = new MemoryStream())
             {
@@ -54,15 +60,9 @@ namespace LpkTool.Library.LoaData
                     bw.Write(FileId);
                     bw.Write(FileSecondaryId);
                     bw.WriteStringLoa(Unk);
-                    SerializeDetails(bw);
                 }
                 return ms.ToArray();
             }
         }
-
-        protected abstract void SerializeDetails(BinaryWriter bw);
-
-        protected abstract void DeserializeDetails(BinaryReader br);
-
     }
 }
