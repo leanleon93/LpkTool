@@ -185,6 +185,8 @@
 
         protected override void Deserialize(BinaryReader br)
         {
+            if (Properties == null)
+                Properties = new Dictionary<string, dynamic>();
             Unk = br.ReadStringLoa();
             StageSequenceType = br.ReadStringLoa();
             switch (StageSequenceType)
