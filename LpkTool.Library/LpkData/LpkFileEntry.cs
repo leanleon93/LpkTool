@@ -160,7 +160,7 @@ namespace LpkTool.Library
             }
         }
 
-        private static byte[] EncryptDbBlock(ref HeaderEntry fileHeader, byte[] newData)
+        private byte[] EncryptDbBlock(ref HeaderEntry fileHeader, byte[] newData)
         {
             var dbName = GetDbName(fileHeader.FilePath);
             fileHeader.UnpackedFileSizeInBytes = newData.Length;
@@ -169,27 +169,27 @@ namespace LpkTool.Library
             for (var i = 0; i < chunks.Count; i++)
             {
                 var chunk = chunks[i];
-                var encryptedChunk = EncryptionHelper.AesEncrypt(chunk, dbName, out int _);
+                var encryptedChunk = EncryptionHelper.AesEncrypt(_lpk._base, chunk, dbName, out int _);
                 Array.Copy(encryptedChunk, 0, encryptedData, (i * _maxDbChunkSize), encryptedChunk.Length);
             }
             fileHeader.PaddedBLockSizeInBytes = encryptedData.Length;
             return encryptedData;
         }
 
-        private static byte[] EncryptNonDbBlock(ref HeaderEntry fileHeader, byte[] newData)
+        private byte[] EncryptNonDbBlock(ref HeaderEntry fileHeader, byte[] newData)
         {
             fileHeader.UnpackedFileSizeInBytes = newData.Length;
             var compressedBlock = CompressionHelper.Inflate(newData, newData.Length, out var sizeCompressed, 7);
             fileHeader.CompressedBlockSizeInBytes = sizeCompressed;
-            var encryptedBlock = EncryptionHelper.BlowfishEncrypt(compressedBlock, Encoding.UTF8.GetBytes(Lpk._key), out var paddedSize);
+            var encryptedBlock = EncryptionHelper.BlowfishEncrypt(compressedBlock, Encoding.UTF8.GetBytes(_lpk._key), out var paddedSize);
             fileHeader.PaddedBLockSizeInBytes = paddedSize;
             return encryptedBlock;
         }
 
-        private static byte[] DecryptNonDbBlock(HeaderEntry fileHeader, BinaryReader br)
+        private byte[] DecryptNonDbBlock(HeaderEntry fileHeader, BinaryReader br)
         {
             var paddedEncryptedBlock = br.ReadBytes(fileHeader.PaddedBLockSizeInBytes);
-            var decryptedCompressedBlock = EncryptionHelper.BlowfishDecrypt(paddedEncryptedBlock, Encoding.UTF8.GetBytes(Lpk._key));
+            var decryptedCompressedBlock = EncryptionHelper.BlowfishDecrypt(paddedEncryptedBlock, Encoding.UTF8.GetBytes(_lpk._key));
             var unpadded = new byte[fileHeader.CompressedBlockSizeInBytes];
             Array.Copy(decryptedCompressedBlock, unpadded, unpadded.Length);
             var decompressedBlock = CompressionHelper.Deflate(unpadded, fileHeader.UnpackedFileSizeInBytes);
@@ -198,7 +198,7 @@ namespace LpkTool.Library
 
         private static readonly int _maxDbChunkSize = 1024;
 
-        private static byte[] DecryptDbBlock(HeaderEntry fileHeader, BinaryReader br)
+        private byte[] DecryptDbBlock(HeaderEntry fileHeader, BinaryReader br)
         {
             var dbName = GetDbName(fileHeader.FilePath);
             var encryptedBlock = br.ReadBytes(fileHeader.PaddedBLockSizeInBytes);
@@ -207,7 +207,7 @@ namespace LpkTool.Library
             for (var i = 0; i < chunks.Count; i++)
             {
                 var chunk = chunks[i];
-                var decryptedChunk = EncryptionHelper.AesDecrypt(chunk, dbName);
+                var decryptedChunk = EncryptionHelper.AesDecrypt(_lpk._base, chunk, dbName);
                 Array.Copy(decryptedChunk, 0, decryptedUnpadded, (i * _maxDbChunkSize), chunk.Length);
             }
             var unpadded = new byte[fileHeader.UnpackedFileSizeInBytes];

@@ -1,72 +1,98 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
 
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="LoaTests.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="LoaTests.cs" />
+		<Compile Remove="LoaTests\QuestTests.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="TestData\.keep" />
-    <None Remove="TestData\ActionCategory.loa" />
-    <None Remove="TestData\ColorOption.loa" />
-    <None Remove="TestData\config.lpk" />
-    <None Remove="TestData\data.lpk" />
-    <None Remove="TestData\font.lpk" />
-    <None Remove="TestData\FontMap.xml" />
-    <None Remove="TestData\FunctionNPCLocation.loa" />
-    <None Remove="TestData\IconInfo.loa" />
-    <None Remove="TestData\loa\101901.loa" />
-    <None Remove="TestData\loa\Table_MovieData.loa" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="TestData\.keep" />
+		<None Remove="TestData\ActionCategory.loa" />
+		<None Remove="TestData\ColorOption.loa" />
+		<None Remove="TestData\config.lpk" />
+		<None Remove="TestData\data.lpk" />
+		<None Remove="TestData\EU\config.lpk" />
+		<None Remove="TestData\EU\data1.lpk" />
+		<None Remove="TestData\font.lpk" />
+		<None Remove="TestData\FontMap.xml" />
+		<None Remove="TestData\FunctionNPCLocation.loa" />
+		<None Remove="TestData\IconInfo.loa" />
+		<None Remove="TestData\loa\101901.loa" />
+		<None Remove="TestData\loa\EFDLItem_PC_GDH_F_HR_02-1_Upper.PC_GDH_F_HR_02-1_Upper.loa" />
+		<None Remove="TestData\loa\EFDLItem_PC_GN_F_AV_118D_Upper.PC_GN_F_AV_118D_Upper.loa" />
+		<None Remove="TestData\loa\Table_MovieData.loa" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="TestData\ActionCategory.loa">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\ColorOption.loa">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\config.lpk">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\data.lpk">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\font.lpk">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\FontMap.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\FunctionNPCLocation.loa">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IconInfo.loa">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\loa\101901.loa">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\loa\Table_MovieData.loa">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="TestData\ActionCategory.loa">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\ColorOption.loa">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\EU\config.lpk">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\EU\data1.lpk">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\EU\data2.lpk">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\EU\font.lpk">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\RU\config.lpk">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\RU\data1.lpk">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\RU\data2.lpk">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\RU\font.lpk">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\FontMap.xml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\FunctionNPCLocation.loa">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\IconInfo.loa">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\loa\101901.loa">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\loa\EFDLItem_PC_GDH_F_HR_02-1_Upper.PC_GDH_F_HR_02-1_Upper.loa">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\loa\EFDLItem_PC_GN_F_AV_118D_Upper.PC_GN_F_AV_118D_Upper.loa">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\loa\Table_MovieData.loa">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="NUnit" Version="3.13.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-    <PackageReference Include="coverlet.collector" Version="3.1.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+		<PackageReference Include="NUnit" Version="3.13.2" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+		<PackageReference Include="coverlet.collector" Version="3.1.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LpkTool.Library\LpkTool.Library.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LpkTool.Library\LpkTool.Library.csproj" />
+	</ItemGroup>
 
 </Project>

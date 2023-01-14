@@ -32,9 +32,9 @@ namespace LpkTool.Library.Helpers
             return blowfish.Decrypt_ECB(data);
         }
 
-        internal static byte[] AesEncrypt(byte[] data, string tableName, out int paddedSize)
+        internal static byte[] AesEncrypt(string @base, byte[] data, string tableName, out int paddedSize)
         {
-            var aesKey = GetAesKey(tableName);
+            var aesKey = GetAesKey(tableName, @base);
             return AesEncrypt(data, aesKey, out paddedSize);
         }
 
@@ -64,9 +64,9 @@ namespace LpkTool.Library.Helpers
             return data;
         }
 
-        internal static byte[] AesDecrypt(byte[] data, string tableName)
+        internal static byte[] AesDecrypt(string @base, byte[] data, string tableName)
         {
-            var aesKey = GetAesKey(tableName);
+            var aesKey = GetAesKey(tableName, @base);
             return AesDecrypt(data, aesKey);
         }
 
@@ -81,9 +81,9 @@ namespace LpkTool.Library.Helpers
             return cipher.DoFinal(data);
         }
 
-        internal static byte[] GetAesKey(string tableName)
+        internal static byte[] GetAesKey(string tableName, string @base)
         {
-            var baseArray = Convert.FromHexString(Lpk._base);
+            var baseArray = Convert.FromHexString(@base);
             var dbNameHash = GetMD5(Encoding.Unicode.GetBytes(tableName));
             var xorResult = new byte[16];
             for (var i = 0; i < 16; i++)

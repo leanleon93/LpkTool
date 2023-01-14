@@ -20,7 +20,7 @@ namespace LpkExport
                 Console.WriteLine(_usage);
                 return;
             }
-            var lpk = Lpk.FromFile(fileArg);
+            var lpk = Lpk.FromFile(fileArg, LpkTool.Library.LpkData.Region.EU);
             var dir = Path.GetDirectoryName(fileArg);
             var filename = Path.GetFileName(fileArg);
             dir = Path.Combine(dir!, filename + ".files");

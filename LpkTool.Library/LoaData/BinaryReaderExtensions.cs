@@ -35,7 +35,66 @@ namespace LpkTool.Library.LoaData
             return str;
         }
 
-        public static KeyValuePair<string, T> ReadKvpLoa<T>(this BinaryReader br)
+        public static LoaProp<LoaProp<T>[]> ReadLoaProp<T>(this BinaryReader br, LoaProp<LoaProp<T>[]> _)
+        {
+            var key = br.ReadStringLoa();
+            var length = br.ReadInt32();
+            var array = new LoaProp<T>[length];
+            for (var i = 0; i < length; i++)
+            {
+                var kvp = br.ReadLoaProp<T>();
+                array[i] = kvp;
+            }
+            var result = new LoaProp<LoaProp<T>[]>(key, array);
+            return result;
+        }
+
+        public static LoaProp<List<T>> ReadLoaProp<T>(this BinaryReader br, LoaProp<List<T>> _) where T : LoaSubclass, new()
+        {
+            var key = br.ReadStringLoa();
+            var num = br.ReadInt32();
+            var list = new List<T>();
+            for (int i = 0; i < num; i++)
+            {
+                list.Add((T)Activator.CreateInstance(typeof(T), br));
+            }
+            var result = new LoaProp<List<T>>(key, list);
+            return result;
+        }
+
+        public static LoaProp<T> ReadLoaProp<T>(this BinaryReader br, LoaProp<T> _)
+        {
+            return br.ReadLoaProp<T>();
+        }
+
+        public static LoaProp<T> ReadLoaProp<T>(this BinaryReader br)
+        {
+
+            if (typeof(T).IsSubclassOf(typeof(LoaSubclass)))
+            {
+                var key = br.ReadStringLoa();
+                var value = (T)Activator.CreateInstance(typeof(T), br);
+                var prop = new LoaProp<T>(key, value);
+                return prop;
+            }
+            else
+            {
+                var kvp = br.ReadKvpLoa<T>();
+                var prop = new LoaProp<T>(kvp.Key, kvp.Value);
+                return prop;
+            }
+
+        }
+
+        public static string GetNextKey(this BinaryReader br)
+        {
+            var pos = br.BaseStream.Position;
+            var nextKey = br.ReadStringLoa();
+            br.BaseStream.Position = pos;
+            return nextKey;
+        }
+
+        private static KeyValuePair<string, T> ReadKvpLoa<T>(this BinaryReader br)
         {
             var key = br.ReadStringLoa();
             KeyValuePair<string, T> result;
@@ -57,6 +116,10 @@ namespace LpkTool.Library.LoaData
                     var value3 = br.ReadBoolean();
                     br.BaseStream.Seek(3, SeekOrigin.Current);
                     result = new KeyValuePair<string, T>(key, (T)(object)value3);
+                    break;
+                case TypeCode.Single:
+                    var value4 = br.ReadSingle();
+                    result = new KeyValuePair<string, T>(key, (T)(object)value4);
                     break;
                 default:
                     throw new NotImplementedException();

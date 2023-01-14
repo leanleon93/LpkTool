@@ -1,4 +1,5 @@
-﻿using LpkTool.Library.Models;
+﻿using LpkTool.Library.LpkData;
+using LpkTool.Library.Models;
 using System.Text;
 
 namespace LpkTool.Library.Helpers
@@ -14,12 +15,12 @@ namespace LpkTool.Library.Helpers
             _fontLpkPath = fontLpkPath;
         }
 
-        public void SwapFont(string fontTtfPath, string languageString = "English")
+        public void SwapFont(string fontTtfPath, Region region, string languageString = "English")
         {
             var fontFilename = Path.GetFileName(fontTtfPath);
             var relativeFontPath = string.Format(_relativeFontPathBase, languageString, fontFilename);
             var relativeFontMapPath = string.Format(_relativeFontMapPathBase, languageString);
-            var lpk = Lpk.FromFile(_fontLpkPath);
+            var lpk = Lpk.FromFile(_fontLpkPath, region);
             lpk.AddFile(relativeFontPath, fontTtfPath);
             var fontMapFile = lpk.GetFileByPath(relativeFontMapPath);
             var fontMap = FontMap.FromXml(Encoding.UTF8.GetString(fontMapFile.GetData()));

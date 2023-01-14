@@ -1,6 +1,7 @@
 ﻿using LpkTool.Library;
 using LpkTool.Library.Helpers;
 using LpkTool.Library.LoaData.Table_MovieData;
+using LpkTool.Library.LpkData;
 
 namespace LostArkPatcher
 {
@@ -12,12 +13,15 @@ namespace LostArkPatcher
         private const string DATAFILE_NAME_BASE = "data{0}.lpk";
         private const string FONT_FILE_NAME = "font.lpk";
 
-        public Patcher(string lostarkInstallDir)
+        private Region _region;
+
+        public Patcher(string lostarkInstallDir, Region region = Region.EU)
         {
             var docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             _exportsDir = Path.Combine(docPath, "LostArk", "exports");
             _patchesDir = Path.Combine(docPath, "LostArk", "patches");
             _efGameDir = Path.Combine(lostarkInstallDir, "EFGame");
+            _region = region;
         }
 
         public void ApplyAllPatches()
@@ -34,7 +38,7 @@ namespace LostArkPatcher
             var data2Path = Path.Combine(_efGameDir, string.Format(DATAFILE_NAME_BASE, 2));
             var fontPath = Path.Combine(_efGameDir, FONT_FILE_NAME);
 
-            var data2Lpk = Lpk.FromFile(data2Path);
+            var data2Lpk = Lpk.FromFile(data2Path, _region);
 
             ApplyExports(data2Lpk, allFiles);
             ApplyList(data2Lpk, allFiles);
@@ -50,19 +54,19 @@ namespace LostArkPatcher
             }
         }
 
-        private static void ApplyFasterStartup(string lpkPath, string[] allFiles)
+        private void ApplyFasterStartup(string lpkPath, string[] allFiles)
         {
             var fasterStartupFile = allFiles.FirstOrDefault(x => Path.GetFileName(x) == "fastStartup");
             if (fasterStartupFile == null) return;
             Console.Write("Applying faster startup -> ");
-            var lpk = Lpk.FromFile(lpkPath);
+            var lpk = Lpk.FromFile(lpkPath, _region);
             var file = lpk.GetFileByName("Table_MovieData.loa");
             if (file == null) return;
             var movieData = new MovieData(file.GetData());
-
-            var introContainer = movieData.MovieDataContainers.FirstOrDefault(x => x.Key == "FullScreen.Intro");
+            var movieDataContainers = movieData.MovieDataContainers.Value;
+            var introContainer = movieDataContainers.FirstOrDefault(x => x.Key.Value == "FullScreen.Intro");
             if (introContainer == null) return;
-            introContainer.MovieDataValueArray = new MovieDataValue[0];
+            introContainer.MovieDataValueArray.Value = new List<MovieDataValue>();
 
             var newData = movieData.Serialize();
 
@@ -93,7 +97,7 @@ namespace LostArkPatcher
             WriteInColor(ConsoleColor.Cyan, $"\t-{language}: \"{fontFilename}\"");
             Console.Write($" ->");
             var swapper = new FontSwapper(fontPath);
-            swapper.SwapFont(fontFilePath);
+            swapper.SwapFont(fontFilePath, _region);
             WriteLineInColor(ConsoleColor.Green, " done");
             Console.WriteLine();
         }

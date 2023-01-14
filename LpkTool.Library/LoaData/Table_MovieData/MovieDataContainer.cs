@@ -11,55 +11,38 @@
         }
 
         public string Unk { get; set; }
-        public string Key { get; set; }
-        public int MoviePlayType { get; set; }
-        public bool LoopContainer { get; set; }
-        public bool GameThreadWait { get; set; }
-        public string TargetTexBindingId { get; set; }
-        public bool TargetStretch { get; set; }
-        public int TargetWidth { get; set; }
-        public int TargetHeight { get; set; }
-        public string Unk2 { get; set; }
-        public MovieDataValue[] MovieDataValueArray { get; set; }
+        public LoaProp<string> Key { get; set; }
+        public LoaProp<int> MoviePlayType { get; set; }
+        public LoaProp<bool> LoopContainer { get; set; }
+        public LoaProp<bool> GameThreadWait { get; set; }
+        public LoaProp<string> TargetTexBindingId { get; set; }
+        public LoaProp<bool> TargetStretch { get; set; }
+        public LoaProp<int> TargetWidth { get; set; }
+        public LoaProp<int> TargetHeight { get; set; }
+        public LoaProp<List<MovieDataValue>> MovieDataValueArray { get; set; }
 
         protected override void Deserialize(BinaryReader br)
         {
             var unk = br.ReadStringLoa();
             Unk = unk;
 
-            var key = br.ReadKvpLoa<string>();
-            Key = key.Value;
+            Key = br.ReadLoaProp(Key);
 
-            var moviePlayType = br.ReadKvpLoa<int>();
-            MoviePlayType = moviePlayType.Value;
+            MoviePlayType = br.ReadLoaProp(MoviePlayType);
 
-            var loopContainer = br.ReadKvpLoa<bool>();
-            LoopContainer = loopContainer.Value;
+            LoopContainer = br.ReadLoaProp(LoopContainer);
 
-            var gameThreadWait = br.ReadKvpLoa<bool>();
-            GameThreadWait = gameThreadWait.Value;
+            GameThreadWait = br.ReadLoaProp(GameThreadWait);
 
-            var targetTextBindingId = br.ReadKvpLoa<string>();
-            TargetTexBindingId = targetTextBindingId.Value;
+            TargetTexBindingId = br.ReadLoaProp(TargetTexBindingId);
 
-            var targetStretch = br.ReadKvpLoa<bool>();
-            TargetStretch = targetStretch.Value;
+            TargetStretch = br.ReadLoaProp(TargetStretch);
 
-            var targetWidth = br.ReadKvpLoa<int>();
-            TargetWidth = targetWidth.Value;
+            TargetWidth = br.ReadLoaProp(TargetWidth);
 
-            var targetHeight = br.ReadKvpLoa<int>();
-            TargetHeight = targetHeight.Value;
+            TargetHeight = br.ReadLoaProp(TargetHeight);
 
-            var unk2 = br.ReadStringLoa();
-            Unk2 = unk2;
-
-            MovieDataValueArray = new MovieDataValue[br.ReadInt32()];
-            for (int j = 0; j < MovieDataValueArray.Length; j++)
-            {
-                var movieDataValue = new MovieDataValue(br);
-                MovieDataValueArray[j] = movieDataValue;
-            }
+            MovieDataValueArray = br.ReadLoaProp(MovieDataValueArray);
         }
 
         public override byte[] Serialize()
@@ -69,20 +52,15 @@
                 using (var bw = new BinaryWriter(ms))
                 {
                     bw.WriteStringLoa(Unk);
-                    bw.WriteKvpLoa(nameof(Key), Key);
-                    bw.WriteKvpLoa(nameof(MoviePlayType), MoviePlayType);
-                    bw.WriteKvpLoa(nameof(LoopContainer), LoopContainer);
-                    bw.WriteKvpLoa(nameof(GameThreadWait), GameThreadWait);
-                    bw.WriteKvpLoa(nameof(TargetTexBindingId), TargetTexBindingId);
-                    bw.WriteKvpLoa(nameof(TargetStretch), TargetStretch);
-                    bw.WriteKvpLoa(nameof(TargetWidth), TargetWidth);
-                    bw.WriteKvpLoa(nameof(TargetHeight), TargetHeight);
-                    bw.WriteStringLoa(Unk2);
-                    bw.Write(MovieDataValueArray.Length);
-                    foreach (var movieDataValue in MovieDataValueArray)
-                    {
-                        bw.Write(movieDataValue.Serialize());
-                    }
+                    bw.WriteLoaProp(Key);
+                    bw.WriteLoaProp(MoviePlayType);
+                    bw.WriteLoaProp(LoopContainer);
+                    bw.WriteLoaProp(GameThreadWait);
+                    bw.WriteLoaProp(TargetTexBindingId);
+                    bw.WriteLoaProp(TargetStretch);
+                    bw.WriteLoaProp(TargetWidth);
+                    bw.WriteLoaProp(TargetHeight);
+                    bw.WriteLoaProp(MovieDataValueArray);
                 }
                 return ms.ToArray();
             }

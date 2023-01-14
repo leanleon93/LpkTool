@@ -1,4 +1,5 @@
 ﻿using LpkTool.Library.Helpers;
+using LpkTool.Library.LpkData;
 using System.Text;
 
 namespace LpkTool.Library
@@ -8,11 +9,27 @@ namespace LpkTool.Library
     /// </summary>
     public class Lpk
     {
-        internal static readonly string _key = "83657ea6ffa1e671375c689a2e99a598";
-        internal static readonly string _base = "1069d88738c5c75f82b44a1f0a382762";
+        internal readonly string _key, _base;
 
-        private Lpk()
+        private const string _euKey = "83657ea6ffa1e671375c689a2e99a598";
+        private const string _euBase = "1069d88738c5c75f82b44a1f0a382762";
+
+        private const string _ruKey = "a7f33db20dfb711a16d5d3dd3d4cef4d";
+        private const string _ruBase = "ee36ace0d87a9eaea565e6884a058b63";
+
+        private Lpk(Region region)
         {
+            switch (region)
+            {
+                case Region.EU:
+                    _key = _euKey;
+                    _base = _euBase;
+                    break;
+                case Region.RU:
+                    _key = _ruKey;
+                    _base = _ruBase;
+                    break;
+            }
             Files = new List<LpkFileEntry>();
         }
 
@@ -241,10 +258,11 @@ namespace LpkTool.Library
         /// Get a new Lpk Instance from a .lpk file
         /// </summary>
         /// <param name="path"></param>
+        /// <param name="region"></param>
         /// <returns></returns>
-        public static Lpk FromFile(string path)
+        public static Lpk FromFile(string path, Region region)
         {
-            var lpk = FromStream(new FileStream(path, FileMode.Open));
+            var lpk = FromStream(new FileStream(path, FileMode.Open), region);
             lpk._isFile = true;
             lpk._filePath = path;
             return lpk;
@@ -254,24 +272,25 @@ namespace LpkTool.Library
         /// Get a new Lpk Instance from a .lpk buffer
         /// </summary>
         /// <param name="lpkArray"></param>
+        /// <param name="region"></param>
         /// <returns></returns>
-        public static Lpk FromByteArray(byte[] lpkArray)
+        public static Lpk FromByteArray(byte[] lpkArray, Region region)
         {
-            var lpk = FromStream(new MemoryStream(lpkArray));
+            var lpk = FromStream(new MemoryStream(lpkArray), region);
             lpk._isFile = false;
             lpk._fileBuffer = lpkArray;
             return lpk;
         }
 
-        private static Lpk FromStream(Stream stream)
+        private static Lpk FromStream(Stream stream, Region region)
         {
-            var result = new Lpk();
+            var result = new Lpk(region);
             using (var br = new BinaryReader(stream))
             {
                 var numberOfFiles = br.ReadInt32();
                 var headerSize = numberOfFiles * Header.HEADER_ENTRY_SIZE;
                 var encryptedHeader = br.ReadBytes(headerSize);
-                var decryptedHeader = EncryptionHelper.BlowfishDecrypt(encryptedHeader, Encoding.UTF8.GetBytes(_key));
+                var decryptedHeader = EncryptionHelper.BlowfishDecrypt(encryptedHeader, Encoding.UTF8.GetBytes(result._key));
                 var header = Header.FromByteArray(decryptedHeader);
                 var offset = headerSize + 8;
                 result._headerOffset = offset;

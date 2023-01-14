@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using LpkTool.Library.LpkData;
+using Microsoft.Data.Sqlite;
 
 namespace LpkTool.Library.DbHelpers
 {
@@ -12,9 +13,9 @@ namespace LpkTool.Library.DbHelpers
         private string TempDir => Path.Combine(Path.GetTempPath(), "lpktool_" + _guid);
         private readonly Lpk _lpk;
 
-        public static ItemHelper FromFile(string lpkPath)
+        public static ItemHelper FromFile(string lpkPath, Region region)
         {
-            return new ItemHelper(Lpk.FromFile(lpkPath));
+            return new ItemHelper(Lpk.FromFile(lpkPath, region));
         }
 
         /// <summary>

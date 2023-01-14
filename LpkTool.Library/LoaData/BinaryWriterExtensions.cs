@@ -40,18 +40,48 @@ namespace LpkTool.Library.LoaData
             bw.Write((byte)0);
         }
 
-        internal static KeyValuePair<string, T> KvpFromProp<T>(string key, T value)
+        public static void WriteLoaProp<T>(this BinaryWriter bw, LoaProp<LoaProp<T>[]> prop)
         {
-            return new KeyValuePair<string, T>(key, value);
+            bw.WriteStringLoa(prop.Key);
+            var array = prop.Value;
+            var length = array.Length;
+            bw.Write(length);
+            for (var i = 0; i < length; i++)
+            {
+                var kvp = array[i];
+                bw.WriteLoaProp(kvp);
+            }
         }
 
-        public static void WriteKvpLoa<T>(this BinaryWriter bw, string key, T value)
+        public static void WriteLoaProp<T>(this BinaryWriter bw, LoaProp<List<T>> prop) where T : LoaSubclass, new()
         {
-            var kvp = KvpFromProp(key, value);
-            bw.WriteKvpLoa(kvp);
+            bw.WriteStringLoa(prop.Key);
+            var list = prop.Value;
+            var length = list.Count;
+            bw.Write(length);
+            for (var i = 0; i < length; i++)
+            {
+                var item = list[i];
+                bw.Write(item.Serialize());
+            }
         }
 
-        public static void WriteKvpLoa<T>(this BinaryWriter bw, KeyValuePair<string, T> kvp)
+        public static void WriteLoaProp<T>(this BinaryWriter bw, LoaProp<T> prop)
+        {
+            if (prop.Value is LoaSubclass ls)
+            {
+                var data = ls.Serialize();
+                bw.WriteStringLoa(prop.Key);
+                bw.Write(data);
+            }
+            else
+            {
+                var kvp = new KeyValuePair<string, T>(prop.Key, prop.Value);
+                bw.WriteKvpLoa(kvp);
+            }
+        }
+
+        private static void WriteKvpLoa<T>(this BinaryWriter bw, KeyValuePair<string, T> kvp)
         {
             var key = kvp.Key;
             switch (Type.GetTypeCode(typeof(T)))
@@ -72,10 +102,15 @@ namespace LpkTool.Library.LoaData
                     bw.Write(value2);
                     break;
                 case TypeCode.Boolean:
-                    var value4 = (bool)(object)kvp.Value;
+                    var value3 = (bool)(object)kvp.Value;
+                    bw.WriteStringLoa(key);
+                    bw.Write(value3);
+                    bw.Write(new byte[3]);
+                    break;
+                case TypeCode.Single:
+                    var value4 = (float)(object)kvp.Value;
                     bw.WriteStringLoa(key);
                     bw.Write(value4);
-                    bw.Write(new byte[3]);
                     break;
                 default:
                     throw new NotImplementedException();

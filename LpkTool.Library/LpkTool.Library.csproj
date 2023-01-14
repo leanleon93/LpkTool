@@ -19,6 +19,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="LoaData\Quest\**" />
+	  <EmbeddedResource Remove="LoaData\Quest\**" />
+	  <None Remove="LoaData\Quest\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Remove="DbHelpers\BuffDebuffEnabler.cs" />
 	  <Compile Remove="DbHelpers\SkillBuff.cs" />
 	</ItemGroup>

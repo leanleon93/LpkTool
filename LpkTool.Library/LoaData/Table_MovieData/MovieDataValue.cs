@@ -11,31 +11,26 @@
         }
 
         public string Unk { get; set; }
-        public string FileName { get; set; }
-        public int FileNameUnk { get; set; }
-        public bool Loop { get; set; }
-        public int DefaultAudioVolumeRate { get; set; }
-        public int ReadBufferSize { get; set; }
+        public LoaProp<string> FileName { get; set; }
+        public LoaProp<int> FileNameUnk { get; set; }
+        public LoaProp<bool> Loop { get; set; }
+        public LoaProp<int> DefaultAudioVolumeRate { get; set; }
+        public LoaProp<int> ReadBufferSize { get; set; }
 
         protected override void Deserialize(BinaryReader br)
         {
             var unk = br.ReadStringLoa();
             Unk = unk;
 
-            var fileName = br.ReadKvpLoa<string>();
-            FileName = fileName.Value;
+            FileName = br.ReadLoaProp(FileName);
 
-            var fileNameUnk = br.ReadKvpLoa<int>();
-            FileNameUnk = fileNameUnk.Value;
+            FileNameUnk = br.ReadLoaProp(FileNameUnk);
 
-            var loop = br.ReadKvpLoa<bool>();
-            Loop = loop.Value;
+            Loop = br.ReadLoaProp(Loop);
 
-            var defaultAudioVolumeRate = br.ReadKvpLoa<int>();
-            DefaultAudioVolumeRate = defaultAudioVolumeRate.Value;
+            DefaultAudioVolumeRate = br.ReadLoaProp(DefaultAudioVolumeRate);
 
-            var readBufferSize = br.ReadKvpLoa<int>();
-            ReadBufferSize = readBufferSize.Value;
+            ReadBufferSize = br.ReadLoaProp(ReadBufferSize);
         }
 
         public override byte[] Serialize()
@@ -45,12 +40,11 @@
                 using (var bw = new BinaryWriter(ms))
                 {
                     bw.WriteStringLoa(Unk);
-                    bw.WriteKvpLoa(nameof(FileName), FileName);
-                    bw.WriteStringLoa("FileName");
-                    bw.Write(FileNameUnk);
-                    bw.WriteKvpLoa(nameof(Loop), Loop);
-                    bw.WriteKvpLoa(nameof(DefaultAudioVolumeRate), DefaultAudioVolumeRate);
-                    bw.WriteKvpLoa(nameof(ReadBufferSize), ReadBufferSize);
+                    bw.WriteLoaProp(FileName);
+                    bw.WriteLoaProp(FileNameUnk);
+                    bw.WriteLoaProp(Loop);
+                    bw.WriteLoaProp(DefaultAudioVolumeRate);
+                    bw.WriteLoaProp(ReadBufferSize);
                 }
                 return ms.ToArray();
             }
