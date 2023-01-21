@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LpkExport": {
+      "commandName": "Project",
+      "commandLineArgs": "\"F:\\GameCenter\\LOSTARK\\EFGame\\data2.lpk\""
+    }
+  }
+}

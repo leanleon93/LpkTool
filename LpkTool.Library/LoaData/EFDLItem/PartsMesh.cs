@@ -35,6 +35,10 @@
         public LoaProp<bool> DyePartBUsed { get; set; }
         public LoaProp<bool> DyePartCUsed { get; set; }
 
+        public LoaProp<bool>? DyePatternAUsed { get; set; }
+        public LoaProp<bool>? DyePatternBUsed { get; set; }
+        public LoaProp<bool>? DyePatternCUsed { get; set; }
+
         public override byte[] Serialize()
         {
             using (var ms = new MemoryStream())
@@ -72,6 +76,19 @@
                     bw.WriteLoaProp(DyePartAUsed);
                     bw.WriteLoaProp(DyePartBUsed);
                     bw.WriteLoaProp(DyePartCUsed);
+
+                    if (DyePatternAUsed != null)
+                    {
+                        bw.WriteLoaProp(DyePatternAUsed);
+                    }
+                    if (DyePatternBUsed != null)
+                    {
+                        bw.WriteLoaProp(DyePatternBUsed);
+                    }
+                    if (DyePatternCUsed != null)
+                    {
+                        bw.WriteLoaProp(DyePatternCUsed);
+                    }
                 }
                 return ms.ToArray();
             }
@@ -124,6 +141,22 @@
             DyePartAUsed = br.ReadLoaProp(DyePartAUsed);
             DyePartBUsed = br.ReadLoaProp(DyePartBUsed);
             DyePartCUsed = br.ReadLoaProp(DyePartCUsed);
+
+            nextKey = br.GetNextKey();
+            if (nextKey == "DyePatternAUsed")
+            {
+                DyePatternAUsed = br.ReadLoaProp(DyePatternAUsed!);
+            }
+            nextKey = br.GetNextKey();
+            if (nextKey == "DyePatternBUsed")
+            {
+                DyePatternBUsed = br.ReadLoaProp(DyePatternBUsed!);
+            }
+            nextKey = br.GetNextKey();
+            if (nextKey == "DyePatternCUsed")
+            {
+                DyePatternCUsed = br.ReadLoaProp(DyePatternCUsed!);
+            }
         }
     }
 }

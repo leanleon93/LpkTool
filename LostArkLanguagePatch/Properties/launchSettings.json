@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LostArkLanguagePatch": {
+      "commandName": "Project",
+      "commandLineArgs": "\"F:\\GameCenter\\LOSTARK\\EFGame\\data2.lpk\" RU \"F:\\SteamLibrary\\steamapps\\common\\Lost Ark\\EFGame\\data2.lpk\" EU"
+    }
+  }
+}

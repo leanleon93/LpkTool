@@ -17,8 +17,11 @@ namespace LpkTool.Library
         private const string _ruKey = "a7f33db20dfb711a16d5d3dd3d4cef4d";
         private const string _ruBase = "ee36ace0d87a9eaea565e6884a058b63";
 
+        public Region Region { get; private set; }
+
         private Lpk(Region region)
         {
+            Region = region;
             switch (region)
             {
                 case Region.EU:

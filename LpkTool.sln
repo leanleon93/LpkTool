@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostArkPatcher", "LostArkPa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LpkExport", "LpkExport\LpkExport.csproj", "{F26B9B68-7636-4A9F-923A-8D4F4C1812ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostArkLanguagePatch", "LostArkLanguagePatch\LostArkLanguagePatch.csproj", "{BF20E4CA-4EF4-4A0F-AF0E-E94A81B2E81B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{F26B9B68-7636-4A9F-923A-8D4F4C1812ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F26B9B68-7636-4A9F-923A-8D4F4C1812ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F26B9B68-7636-4A9F-923A-8D4F4C1812ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF20E4CA-4EF4-4A0F-AF0E-E94A81B2E81B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF20E4CA-4EF4-4A0F-AF0E-E94A81B2E81B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF20E4CA-4EF4-4A0F-AF0E-E94A81B2E81B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF20E4CA-4EF4-4A0F-AF0E-E94A81B2E81B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
