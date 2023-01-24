@@ -6,7 +6,7 @@ namespace LpkTool.Library.Helpers
 {
     public class FontSwapper
     {
-        private string _fontLpkPath;
+        private readonly string _fontLpkPath;
         private readonly string _relativeFontPathBase = @"\Binaries\Fonts\{0}\{1}";
         private readonly string _relativeFontMapPathBase = @"\Binaries\Fonts\{0}\FontMap.xml";
 

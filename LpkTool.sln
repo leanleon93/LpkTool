@@ -18,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostArkPatcher", "LostArkPa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LpkExport", "LpkExport\LpkExport.csproj", "{F26B9B68-7636-4A9F-923A-8D4F4C1812ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostArkLanguagePatch", "LostArkLanguagePatch\LostArkLanguagePatch.csproj", "{BF20E4CA-4EF4-4A0F-AF0E-E94A81B2E81B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostArkLanguagePatch", "LostArkLanguagePatch\LostArkLanguagePatch.csproj", "{BF20E4CA-4EF4-4A0F-AF0E-E94A81B2E81B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

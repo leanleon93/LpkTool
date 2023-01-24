@@ -18,7 +18,7 @@ namespace LpkTool.Tests.LoaTests
             {
                 CollectionAssert.AreEqual(origData, newData);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 var outPath = path.Replace(".loa", ".fail");
                 File.WriteAllBytes(outPath, newData);

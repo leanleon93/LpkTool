@@ -13,7 +13,7 @@ namespace LostArkPatcher
         private const string DATAFILE_NAME_BASE = "data{0}.lpk";
         private const string FONT_FILE_NAME = "font.lpk";
 
-        private Region _region;
+        private readonly Region _region;
 
         public Patcher(string lostarkInstallDir, Region region = Region.EU)
         {

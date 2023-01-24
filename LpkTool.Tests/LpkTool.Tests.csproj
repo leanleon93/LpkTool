@@ -14,72 +14,11 @@
 
 	<ItemGroup>
 		<None Remove="TestData\.keep" />
-		<None Remove="TestData\ActionCategory.loa" />
-		<None Remove="TestData\ColorOption.loa" />
-		<None Remove="TestData\config.lpk" />
-		<None Remove="TestData\data.lpk" />
-		<None Remove="TestData\EU\config.lpk" />
-		<None Remove="TestData\EU\data1.lpk" />
-		<None Remove="TestData\font.lpk" />
-		<None Remove="TestData\FontMap.xml" />
-		<None Remove="TestData\FunctionNPCLocation.loa" />
-		<None Remove="TestData\IconInfo.loa" />
-		<None Remove="TestData\loa\101901.loa" />
-		<None Remove="TestData\loa\EFDLItem_PC_GDH_F_HR_02-1_Upper.PC_GDH_F_HR_02-1_Upper.loa" />
-		<None Remove="TestData\loa\EFDLItem_PC_GN_F_AV_118D_Upper.PC_GN_F_AV_118D_Upper.loa" />
-		<None Remove="TestData\loa\Table_MovieData.loa" />
+		<None Remove="TestData\**\*.*" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="TestData\ActionCategory.loa">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\ColorOption.loa">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\EU\config.lpk">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\EU\data1.lpk">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\EU\data2.lpk">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\EU\font.lpk">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\RU\config.lpk">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\RU\data1.lpk">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\RU\data2.lpk">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\RU\font.lpk">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\FontMap.xml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\FunctionNPCLocation.loa">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\IconInfo.loa">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\loa\101901.loa">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\loa\EFDLItem_PC_GDH_F_HR_02-1_Upper.PC_GDH_F_HR_02-1_Upper.loa">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\loa\EFDLItem_PC_GN_F_AV_118D_Upper.PC_GN_F_AV_118D_Upper.loa">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="TestData\loa\Table_MovieData.loa">
+		<Content Include="TestData\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
