@@ -59,7 +59,11 @@ namespace LostArkPatcher
                 var config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(usersettingsPath));
                 if (config != null && !string.IsNullOrEmpty(config.InstallDir))
                 {
-                    return config.InstallDir;
+                    var dataCheckPath = Path.Combine(config.InstallDir, "EFGame", "data2.lpk");
+                    if (File.Exists(dataCheckPath))
+                    {
+                        return config.InstallDir;
+                    }
                 }
             }
             var lostArkInstallDir = (string?)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 1599340", "InstallLocation", "");
