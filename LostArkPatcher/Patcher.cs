@@ -1,7 +1,8 @@
 ﻿using LpkTool.Library;
 using LpkTool.Library.Helpers;
 using LpkTool.Library.LoaData.Table_MovieData;
-using LpkTool.Library.LpkData;
+using Newtonsoft.Json;
+using Region = LpkTool.Library.LpkData.Region;
 
 namespace LostArkPatcher
 {
@@ -22,6 +23,7 @@ namespace LostArkPatcher
             _patchesDir = Path.Combine(docPath, "LostArk", "patches");
             _efGameDir = Path.Combine(lostarkInstallDir, "EFGame");
             _region = region;
+            _uncensored = false;
         }
 
         public void ApplyAllPatches()
@@ -43,14 +45,124 @@ namespace LostArkPatcher
             ApplyExports(data2Lpk, allFiles);
             ApplyList(data2Lpk, allFiles);
             ApplyFontSwap(fontPath, allFiles);
-
+            ApplyFullUncensor(allFiles);
+            ApplyArtistUncensor(allFiles);
+            ApplyFileReplaces(allFiles);
             ApplyFasterStartup(data1Path, allFiles);
-
+            ApplyRemoveAllCutscenes(data1Path, allFiles);
             if (ApplyPatches(data2Lpk, allFiles))
             {
                 Console.Write("\nRepacking data2 ->");
                 data2Lpk.RepackToFile(data2Path);
                 WriteLineInColor(ConsoleColor.Green, " done");
+            }
+        }
+
+        private void ApplyRemoveAllCutscenes(string lpkPath, string[] allFiles)
+        {
+            var fasterStartupFile = allFiles.FirstOrDefault(x => Path.GetFileName(x) == "cutsceneRemoval");
+            if (fasterStartupFile == null) return;
+            Console.Write("Applying remove all cutscenes -> ");
+
+            var lpk = Lpk.FromFile(lpkPath, _region);
+            var file = lpk.GetFileByName("Table_MovieData.loa");
+            if (file == null) return;
+            var movieData = new MovieData(file.GetData());
+            var movieDataContainers = movieData.MovieDataContainers.Value;
+            foreach (var movieContainer in movieDataContainers.Where(x => x != null))
+            {
+                movieContainer.MovieDataValueArray.Value = new List<MovieDataValue>();
+            }
+
+            var newData = movieData.Serialize();
+
+            file.ReplaceData(newData);
+            lpk.RepackToFile(lpkPath);
+
+            WriteLineInColor(ConsoleColor.Green, "done\n");
+        }
+
+        private bool _uncensored;
+
+        private void ApplyFullUncensor(string[] allFiles)
+        {
+            var replaceFile = allFiles.FirstOrDefault(x => Path.GetFileName(x) == "uncensor_plus");
+            if (replaceFile == null) return;
+            var replaceItemDir = File.ReadAllText(replaceFile);
+            Console.Write("Applying full korean uncensor -> ");
+
+            var allItemFiles = Directory.GetFiles(replaceItemDir, "", SearchOption.AllDirectories);
+            var artistOutfitFiles = allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sp")).ToList();
+            artistOutfitFiles.AddRange(allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sdm")).ToList());
+            artistOutfitFiles.AddRange(allItemFiles.Where(x => x.ToLower().Contains(@"\item\")).ToList());
+            artistOutfitFiles.AddRange(allItemFiles.Where(x => x.ToLower().Contains(@"\monster\")).ToList());
+            artistOutfitFiles.AddRange(allItemFiles.Where(x => x.ToLower().Contains(@"\human\")).ToList());
+            artistOutfitFiles = artistOutfitFiles.Distinct().ToList();
+            var replaces = new List<FileReplace>();
+            foreach (var outfitFile in artistOutfitFiles)
+            {
+                replaces.Add(new FileReplace() {
+                    DataFileId = 4,
+                    NewFilePath = outfitFile,
+                    SearchFilename = Path.GetFileName(outfitFile)
+                });
+            }
+            RunReplaces(replaces.ToArray());
+
+            WriteLineInColor(ConsoleColor.Green, "done\n");
+            _uncensored = true;
+        }
+
+        private void ApplyArtistUncensor(string[] allFiles)
+        {
+            var replaceFile = allFiles.FirstOrDefault(x => Path.GetFileName(x) == "uncensor");
+            if (replaceFile == null || _uncensored) return;
+            var replaceItemDir = File.ReadAllText(replaceFile);
+            Console.Write("Applying artist uncensor -> ");
+
+            var allItemFiles = Directory.GetFiles(replaceItemDir, "", SearchOption.AllDirectories);
+            var artistOutfitFiles = allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sp")).ToList();
+            artistOutfitFiles.AddRange(allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sdm")).ToList());
+            artistOutfitFiles = artistOutfitFiles.Distinct().ToList();
+            var replaces = new List<FileReplace>();
+            foreach (var outfitFile in artistOutfitFiles)
+            {
+                replaces.Add(new FileReplace() {
+                    DataFileId = 4,
+                    NewFilePath = outfitFile,
+                    SearchFilename = Path.GetFileName(outfitFile)
+                });
+            }
+            RunReplaces(replaces.ToArray());
+
+            WriteLineInColor(ConsoleColor.Green, "done\n");
+            _uncensored = true;
+        }
+
+        private void ApplyFileReplaces(string[] allFiles)
+        {
+            var replaceFile = allFiles.FirstOrDefault(x => Path.GetFileName(x) == "replaces.json");
+            if (replaceFile == null) return;
+            Console.Write("Applying replaces -> ");
+            var replaces = JsonConvert.DeserializeObject<FileReplace[]>(File.ReadAllText(replaceFile));
+            RunReplaces(replaces);
+            WriteLineInColor(ConsoleColor.Green, "done\n");
+        }
+
+        private void RunReplaces(FileReplace[]? replaces)
+        {
+            foreach (var groupedReplaces in replaces.GroupBy(x => x.DataFileId))
+            {
+                var id = groupedReplaces.Key;
+                var dataPath = Path.Combine(_efGameDir, string.Format(DATAFILE_NAME_BASE, id));
+                var lpk = Lpk.FromFile(dataPath, _region);
+                foreach (var replace in groupedReplaces)
+                {
+                    var file = lpk.GetFileByName(replace.SearchFilename);
+                    if (file == null) continue;
+                    file.ReplaceData(replace.NewFilePath);
+                }
+                lpk.RepackToFile(dataPath);
             }
         }
 
