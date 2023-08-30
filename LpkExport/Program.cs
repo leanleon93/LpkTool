@@ -8,7 +8,7 @@ namespace LpkExport
         private static readonly string _usage = "Usage LpkExport.exe \"data.lpk\"";
         private static readonly string _exporting = "Exporting \"{0}\"";
 
-        private static readonly Region _region = Region.EU;
+        private static readonly Region _region = Region.RU;
 
         private static void Main(string[] args)
         {

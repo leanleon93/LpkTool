@@ -1,7 +1,6 @@
 ﻿//Testing Project
 
 using LpkTool.Library;
-using LpkTool.Library.LoaData.EFDLItem;
 using Microsoft.Win32;
 
 internal class Program
@@ -15,21 +14,10 @@ internal class Program
         var lpkFilePath = Path.Combine(efGamePath, string.Format(baseName, 4));
 
         var lpk = Lpk.FromFile(lpkFilePath, LpkTool.Library.LpkData.Region.EU);
-        var top = lpk.GetFileByName("EFDLItem_WP_GDH_F_AV_047.WP_GDH_F_AV_047.loa");
+        var top = lpk.GetFileByName("EFDLChar_PC_GAM.PC_GAM.loa");
         if (top == null) return;
-        var item = new EFDLItem(top.GetData());
 
-        //var itemJson = JsonConvert.SerializeObject(item);
-        //File.WriteAllText(@"C:\Users\leanw\Documents\LostArk\gs_gun.json", itemJson);
-
-        var list = item.ItemParticleDatSpawns.Value;
-        foreach (var part in list)
-        {
-            part.RelativeScale.Value.X.Value = 5.0f;
-            part.RelativeScale.Value.Y.Value = 5.0f;
-            part.RelativeScale.Value.Z.Value = 5.0f;
-        }
-        top.ReplaceData(item.Serialize());
+        top.ReplaceData(@"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data4.lpk.files\EFGame_Extra\ClientData\XmlData\LookInfo\Human\EFDLChar_PC_GDH_F.PC_GDH_F.loa");
         lpk.RepackToFile(lpkFilePath);
     }
 }

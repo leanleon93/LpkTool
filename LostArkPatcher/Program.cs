@@ -1,15 +1,18 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace LostArkPatcher
 {
+
     internal class Program
     {
+        [STAThread]
         //Place Patches in Documents/LostArk/Patches
         private static void Main()
         {
             Patcher.WriteLineInColor(ConsoleColor.Magenta, "- LostArk .lpk patcher by LEaN -\n");
-            var lostArkInstallDir = (string?)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 1599340", "InstallLocation", "");
+            var lostArkInstallDir = GetInstallDir();
             Process[] pname = Process.GetProcessesByName("LOSTARK");
 #if RELEASE
             var loc = AppContext.BaseDirectory;
@@ -46,6 +49,56 @@ namespace LostArkPatcher
 
             Console.WriteLine("\nPress any key to exit!");
             Console.ReadKey();
+        }
+
+        private static string? GetInstallDir()
+        {
+            var usersettingsPath = "LostArkPatcher.usersettings.json";
+            if (File.Exists(usersettingsPath))
+            {
+                var config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(usersettingsPath));
+                if (config != null && !string.IsNullOrEmpty(config.InstallDir))
+                {
+                    return config.InstallDir;
+                }
+            }
+            var lostArkInstallDir = (string?)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 1599340", "InstallLocation", "");
+            if (!string.IsNullOrEmpty(lostArkInstallDir) && Directory.Exists(lostArkInstallDir))
+            {
+                var dataCheckPath = Path.Combine(lostArkInstallDir, "EFGame", "data2.lpk");
+                if (File.Exists(dataCheckPath))
+                {
+                    return lostArkInstallDir;
+                }
+            }
+            while (true)
+            {
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
+                fbd.Description = "Select Lost Ark installation directory";
+                fbd.ShowNewFolderButton = false;
+                fbd.RootFolder = Environment.SpecialFolder.MyComputer;
+                var dialogResult = fbd.ShowDialog();
+                if (dialogResult == DialogResult.OK)
+                {
+                    var dataCheckPath = Path.Combine(fbd.SelectedPath, "EFGame", "data2.lpk");
+                    if (File.Exists(dataCheckPath))
+                    {
+                        var config = new Config() {
+                            InstallDir = fbd.SelectedPath
+                        };
+                        File.WriteAllText(usersettingsPath, JsonConvert.SerializeObject(config));
+                        return fbd.SelectedPath;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Not a valid Lost Ark installation!");
+                    }
+                }
+                if (dialogResult == DialogResult.Cancel)
+                {
+                    System.Environment.Exit(0);
+                }
+            }
         }
     }
 }
