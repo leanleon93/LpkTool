@@ -1,5 +1,6 @@
 ﻿using LpkTool.Library.LoaData.IconInfo;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System;
 using System.IO;
 

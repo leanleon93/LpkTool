@@ -1,5 +1,4 @@
 ﻿using LpkTool.Library;
-using LpkTool.Library.LpkData;
 
 namespace LpkExport
 {
@@ -7,8 +6,6 @@ namespace LpkExport
     {
         private static readonly string _usage = "Usage LpkExport.exe \"data.lpk\"";
         private static readonly string _exporting = "Exporting \"{0}\"";
-
-        private static readonly Region _region = Region.RU;
 
         private static void Main(string[] args)
         {
@@ -23,7 +20,8 @@ namespace LpkExport
                 Console.WriteLine(_usage);
                 return;
             }
-            var lpk = Lpk.FromFile(fileArg, _region);
+            var settings = Settings.Load();
+            var lpk = Lpk.FromFile(fileArg, settings.Region);
             var dir = Path.GetDirectoryName(fileArg);
             var filename = Path.GetFileName(fileArg);
             dir = Path.Combine(dir!, filename + ".files");

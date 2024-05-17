@@ -1,5 +1,6 @@
 using LpkTool.Library.Helpers;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System;
 using System.Text;
 
@@ -23,7 +24,7 @@ namespace LpkTool.Tests
             var decryptedUnpadded = new byte[testData.Length];
             Array.Copy(decrypted, decryptedUnpadded, decryptedUnpadded.Length);
             var result = Encoding.UTF8.GetString(decryptedUnpadded);
-            Assert.AreEqual(testString, result);
+            ClassicAssert.AreEqual(testString, result);
         }
 
         [Test]
@@ -39,7 +40,7 @@ namespace LpkTool.Tests
             var decryptedUnpadded = new byte[testData.Length];
             Array.Copy(decrypted, decryptedUnpadded, decryptedUnpadded.Length);
             var result = Encoding.UTF8.GetString(decryptedUnpadded);
-            Assert.AreEqual(testString, result);
+            ClassicAssert.AreEqual(testString, result);
         }
     }
 }

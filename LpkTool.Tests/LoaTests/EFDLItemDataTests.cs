@@ -1,5 +1,6 @@
 ﻿using LpkTool.Library.LoaData.EFDLItem;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System;
 using System.IO;
 

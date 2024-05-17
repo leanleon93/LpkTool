@@ -1,5 +1,6 @@
 ﻿using LpkTool.Library;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System.IO;
 using System.Text;
 
@@ -21,7 +22,7 @@ namespace LpkTool.Tests
             var repackResult = lpk.RepackToByteArray();
             var repackResultString = Encoding.UTF8.GetString(repackResult);
             var inputString = Encoding.UTF8.GetString(File.ReadAllBytes(path));
-            Assert.AreEqual(inputString, repackResultString);
+            ClassicAssert.AreEqual(inputString, repackResultString);
         }
 
         [Test]
@@ -37,7 +38,7 @@ namespace LpkTool.Tests
             var repackResult = lpk.RepackToByteArray();
             var repackResultString = Encoding.UTF8.GetString(repackResult);
             var inputString = Encoding.UTF8.GetString(File.ReadAllBytes(path));
-            Assert.AreEqual(inputString, repackResultString);
+            ClassicAssert.AreEqual(inputString, repackResultString);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using LpkTool.Library.LoaData.Table_MovieData;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System.IO;
 
 namespace LpkTool.Tests.LoaTests

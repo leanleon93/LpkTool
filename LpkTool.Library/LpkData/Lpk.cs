@@ -12,7 +12,7 @@ namespace LpkTool.Library
         internal readonly string _key, _base;
 
         private const string _euKey = "83657ea6ffa1e671375c689a2e99a598";
-        private const string _euBase = "1069d88738c5c75f82b44a1f0a382762";
+        private const string _euBase = "1069d88738c5c75f82b44a1f0a382768";
 
         private const string _ruKey = "a7f33db20dfb711a16d5d3dd3d4cef4d";
         private const string _ruBase = "ee36ace0d87a9eaea565e6884a058b63";

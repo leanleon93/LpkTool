@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "LpkExport": {
+    "LostArkPatcher": {
       "commandName": "Project",
       "commandLineArgs": "\"F:\\Games\\Gamecenter\\LOSTARK\\EFGame\\data4.lpk\""
     }
