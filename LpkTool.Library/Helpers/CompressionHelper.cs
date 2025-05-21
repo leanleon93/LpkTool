@@ -1,4 +1,4 @@
-﻿using Ionic.Zlib;
+﻿using System.IO.Compression;
 
 namespace LpkTool.Library.Helpers
 {
@@ -15,13 +15,21 @@ namespace LpkTool.Library.Helpers
         /// <returns></returns>
         internal static byte[] Deflate(byte[] buffer, int sizeDecompressed)
         {
-            var array = ZlibStream.UncompressBuffer(buffer);
+            using var input = new MemoryStream(buffer);
+            using var zlib = new ZLibStream(input, CompressionMode.Decompress);
+            using var output = new MemoryStream();
+            zlib.CopyTo(output);
+            var array = output.ToArray();
             var array2 = new byte[sizeDecompressed];
-            if (array.Length > sizeDecompressed)
-                Array.Copy(array, 0, array2, 0, sizeDecompressed);
-            else
-                Array.Copy(array, 0, array2, 0, array.Length);
+            Array.Copy(array, 0, array2, 0, Math.Min(array.Length, sizeDecompressed));
             return array2;
+        }
+
+        private static CompressionLevel MapCompressionLevel(int level)
+        {
+            if (level <= 0) return CompressionLevel.NoCompression;
+            if (level <= 5) return CompressionLevel.Fastest;
+            return CompressionLevel.Optimal;
         }
 
         /// <summary>
@@ -37,11 +45,13 @@ namespace LpkTool.Library.Helpers
             if (compressionLevel > 9) compressionLevel = 9;
             if (compressionLevel < 0) compressionLevel = 0;
             var memoryStream = new MemoryStream();
-            var zlibStream = new ZlibStream(memoryStream, CompressionMode.Compress, (CompressionLevel)compressionLevel,
-                true);
-            zlibStream.Write(buffer, 0, sizeDecompressed);
-            zlibStream.Flush();
-            zlibStream.Close();
+            using (var zlibStream = new ZLibStream(memoryStream, MapCompressionLevel(compressionLevel), true))
+            {
+                zlibStream.Write(buffer, 0, sizeDecompressed);
+                zlibStream.Flush();
+                zlibStream.Close();
+            }
+
             sizeCompressed = (int)memoryStream.Length;
             return memoryStream.ToArray();
         }
