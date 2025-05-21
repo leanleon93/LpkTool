@@ -6,7 +6,6 @@ namespace LpkExport
 {
     public class Settings
     {
-
         private const string FILENAME = "LpkExport.usersettings.json";
 
         [JsonConverter(typeof(StringEnumConverter))]

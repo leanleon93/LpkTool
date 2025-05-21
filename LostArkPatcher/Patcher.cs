@@ -91,15 +91,19 @@ namespace LostArkPatcher
             var replaceItemDir = File.ReadAllText(replaceFile);
             Console.Write("Applying full korean uncensor -> ");
 
-            var allItemFiles = Directory.GetFiles(replaceItemDir, "", SearchOption.AllDirectories);
-            var artistOutfitFiles = allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sp")).ToList();
-            artistOutfitFiles.AddRange(allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sdm")).ToList());
-            artistOutfitFiles.AddRange(allItemFiles.Where(x => x.ToLower().Contains(@"\item\")).ToList());
-            artistOutfitFiles.AddRange(allItemFiles.Where(x => x.ToLower().Contains(@"\monster\")).ToList());
-            artistOutfitFiles.AddRange(allItemFiles.Where(x => x.ToLower().Contains(@"\human\")).ToList());
-            artistOutfitFiles = artistOutfitFiles.Distinct().ToList();
+            var allLoaFiles = Directory.GetFiles(replaceItemDir, "", SearchOption.AllDirectories);
+
+            //var artistOutfitFiles = allLoaFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sp")).ToList();
+            //artistOutfitFiles.AddRange(allLoaFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sdm")).ToList());
+            //artistOutfitFiles.AddRange(allLoaFiles.Where(x => x.ToLower().Contains(@"\item\")).ToList());
+            //artistOutfitFiles.AddRange(allLoaFiles.Where(x => x.ToLower().Contains(@"\monster\")).ToList());
+            //artistOutfitFiles.AddRange(allLoaFiles.Where(x => x.ToLower().Contains(@"\human\")).ToList());
+            //artistOutfitFiles = artistOutfitFiles.Distinct().ToList();
+
+            var allItemFiles = allLoaFiles.Where(x => x.Contains(@"\item\", StringComparison.OrdinalIgnoreCase));
+
             var replaces = new List<FileReplace>();
-            foreach (var outfitFile in artistOutfitFiles)
+            foreach (var outfitFile in allItemFiles)
             {
                 replaces.Add(new FileReplace() {
                     DataFileId = 4,
@@ -121,11 +125,12 @@ namespace LostArkPatcher
             Console.Write("Applying artist uncensor -> ");
 
             var allItemFiles = Directory.GetFiles(replaceItemDir, "", SearchOption.AllDirectories);
-            var artistOutfitFiles = allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sp")).ToList();
-            artistOutfitFiles.AddRange(allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains("pc_sdm")).ToList());
+            allItemFiles = allItemFiles.Where(x => x.Contains(@"\item\", StringComparison.OrdinalIgnoreCase)).ToArray();
+            var artistOutfitFiles = allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).Contains("pc_sp", StringComparison.OrdinalIgnoreCase)).ToList();
+            artistOutfitFiles.AddRange(allItemFiles.Where(x => Path.GetFileNameWithoutExtension(x).Contains("pc_sdm", StringComparison.OrdinalIgnoreCase)).ToList());
             artistOutfitFiles = artistOutfitFiles.Distinct().ToList();
             var replaces = new List<FileReplace>();
-            foreach (var outfitFile in artistOutfitFiles)
+            foreach (var outfitFile in artistOutfitFiles.Take(2))
             {
                 replaces.Add(new FileReplace() {
                     DataFileId = 4,
@@ -298,6 +303,5 @@ namespace LostArkPatcher
             Console.WriteLine(text);
             Console.ForegroundColor = ConsoleColor.White;
         }
-
     }
 }

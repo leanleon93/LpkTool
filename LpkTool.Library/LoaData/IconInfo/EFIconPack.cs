@@ -20,6 +20,8 @@
         public LoaProp<int> TextureWidth { get; set; }
         public LoaProp<int> TextureHeight { get; set; }
         public LoaProp<string> LanguageOption { get; set; }
+        public LoaProp<bool> OptionDirectory { get; set; }
+        public LoaProp<bool> OptionEncrypt { get; set; }
 
         public override byte[] Serialize()
         {
@@ -37,6 +39,8 @@
                     bw.WriteLoaProp(TextureWidth);
                     bw.WriteLoaProp(TextureHeight);
                     bw.WriteLoaProp(LanguageOption);
+                    bw.WriteLoaProp(OptionDirectory);
+                    bw.WriteLoaProp(OptionEncrypt);
                 }
                 return ms.ToArray();
             }
@@ -54,6 +58,8 @@
             TextureWidth = br.ReadLoaProp(TextureWidth);
             TextureHeight = br.ReadLoaProp(TextureHeight);
             LanguageOption = br.ReadLoaProp(LanguageOption);
+            OptionDirectory = br.ReadLoaProp(OptionDirectory);
+            OptionEncrypt = br.ReadLoaProp(OptionEncrypt);
         }
     }
 }

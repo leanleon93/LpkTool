@@ -12,12 +12,30 @@ namespace LpkTool.Library
         internal readonly string _key, _base;
 
         private const string _euKey = "83657ea6ffa1e671375c689a2e99a598";
-        private const string _euBase = "1069d88738c5c75f82b44a1f0a382768";
+        private const string _euBase = "1069d88738c5c75f82b44a1f0a38276D";
 
         private const string _ruKey = "a7f33db20dfb711a16d5d3dd3d4cef4d";
         private const string _ruBase = "ee36ace0d87a9eaea565e6884a058b63";
 
         public Region Region { get; private set; }
+
+        private Lpk(Region region, string keyBase)
+        {
+            Region = region;
+            switch (region)
+            {
+                case Region.EU:
+                    _key = _euKey;
+                    _base = _euBase;
+                    break;
+                case Region.RU:
+                    _key = _ruKey;
+                    _base = _ruBase;
+                    break;
+            }
+            _base = keyBase;
+            Files = new List<LpkFileEntry>();
+        }
 
         private Lpk(Region region)
         {
@@ -71,10 +89,21 @@ namespace LpkTool.Library
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
+        [Obsolete("Getting a file by name can be misleading. Use GetFilesByName instead. Or a more precise method like GetFileByPath.")]
         public LpkFileEntry? GetFileByName(string filename)
         {
-            var fileEntry = Files.Where(x => Path.GetFileName(x.FilePath).ToLower() == filename.ToLower()).FirstOrDefault();
+            var fileEntry = Files.FirstOrDefault(x => Path.GetFileName(x.FilePath).ToLower() == filename.ToLower());
             return fileEntry;
+        }
+
+        /// <summary>
+        /// Get files by name.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public IEnumerable<LpkFileEntry> GetFilesByName(string filename)
+        {
+            return Files.Where(x => Path.GetFileName(x.FilePath).Equals(filename, StringComparison.InvariantCultureIgnoreCase));
         }
 
         /// <summary>
@@ -106,9 +135,18 @@ namespace LpkTool.Library
                 var fileComment = sqlFileContent.Length > 0 ? sqlFileContent[0] : null;
                 if (fileComment == null || !fileComment.StartsWith("--File:")) return false;
                 var dbFileName = fileComment.Replace("--File:", "");
-                var dbFile = GetFileByName(dbFileName);
-                if (dbFile == null) return false;
-                dbFile?.ApplySqlFile(file);
+                var dbFiles = GetFilesByName(dbFileName);
+                if (!dbFiles.Any()) return false;
+#if DEBUG
+                Console.Write(" Files: ");
+#endif
+                foreach (var dbFile in dbFiles)
+                {
+#if DEBUG
+                    Console.Write($"{dbFile.FilePath} ");
+#endif
+                    dbFile.ApplySqlFile(file);
+                }
                 return true;
             }
             catch
@@ -272,6 +310,21 @@ namespace LpkTool.Library
         }
 
         /// <summary>
+        /// Get a new Lpk Instance from a .lpk file
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="region"></param>
+        /// <param name="keyBase"></param>
+        /// <returns></returns>
+        public static Lpk FromFile(string path, Region region, string keyBase)
+        {
+            var lpk = FromStream(new FileStream(path, FileMode.Open), region, keyBase);
+            lpk._isFile = true;
+            lpk._filePath = path;
+            return lpk;
+        }
+
+        /// <summary>
         /// Get a new Lpk Instance from a .lpk buffer
         /// </summary>
         /// <param name="lpkArray"></param>
@@ -283,6 +336,29 @@ namespace LpkTool.Library
             lpk._isFile = false;
             lpk._fileBuffer = lpkArray;
             return lpk;
+        }
+
+        private static Lpk FromStream(Stream stream, Region region, string keyBase)
+        {
+            var result = new Lpk(region, keyBase);
+            using (var br = new BinaryReader(stream))
+            {
+                var numberOfFiles = br.ReadInt32();
+                var headerSize = numberOfFiles * Header.HEADER_ENTRY_SIZE;
+                var encryptedHeader = br.ReadBytes(headerSize);
+                var decryptedHeader = EncryptionHelper.BlowfishDecrypt(encryptedHeader, Encoding.UTF8.GetBytes(result._key));
+                var header = Header.FromByteArray(decryptedHeader);
+                var offset = headerSize + 8;
+                result._headerOffset = offset;
+                for (var i = 0; i < numberOfFiles; i++)
+                {
+                    var fileHeaderEntry = header.Entries[i];
+                    result.Files.Add(new LpkFileEntry(result, fileHeaderEntry, offset));
+                    offset += fileHeaderEntry.PaddedBLockSizeInBytes;
+                }
+                result._eof = (int)br.BaseStream.Length;
+            }
+            return result;
         }
 
         private static Lpk FromStream(Stream stream, Region region)

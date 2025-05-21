@@ -2,7 +2,7 @@
   "profiles": {
     "LpkExport": {
       "commandName": "Project",
-      "commandLineArgs": "\"F:\\Games\\Gamecenter\\LOSTARK\\EFGame\\data4.lpk\""
+      "commandLineArgs": "\"F:\\VK Play\\LOST ARK\\EFGame\\data4.lpk\""
     }
   }
 }
