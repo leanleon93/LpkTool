@@ -32,8 +32,5 @@ internal class Program
                 break;
             }
         }
-
-        //top.ReplaceData(@"F:\SteamLibrary\steamapps\common\Lost Ark\EFGame\data4.lpk.files\EFGame_Extra\ClientData\XmlData\LookInfo\Human\EFDLChar_PC_GDH_F.PC_GDH_F.loa");
-        //lpk.RepackToFile(lpkFilePath);
     }
 }

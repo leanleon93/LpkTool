@@ -17,6 +17,9 @@ namespace LpkTool.Library
         private const string _ruKey = "a7f33db20dfb711a16d5d3dd3d4cef4d";
         private const string _ruBase = "ee36ace0d87a9eaea565e6884a058b63";
 
+        /// <summary>
+        /// Game Region
+        /// </summary>
         public Region Region { get; private set; }
 
         private Lpk(Region region, string keyBase)
@@ -31,6 +34,10 @@ namespace LpkTool.Library
                 case Region.RU:
                     _key = _ruKey;
                     _base = _ruBase;
+                    break;
+                default:
+                    _key = _euKey;
+                    _base = _euBase;
                     break;
             }
             _base = keyBase;
@@ -50,8 +57,12 @@ namespace LpkTool.Library
                     _key = _ruKey;
                     _base = _ruBase;
                     break;
+                default:
+                    _key = _euKey;
+                    _base = _euBase;
+                    break;
             }
-            Files = new List<LpkFileEntry>();
+            Files = [];
         }
 
         /// <summary>
